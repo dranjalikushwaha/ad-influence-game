@@ -9,13 +9,17 @@
     .app { width: min(1180px, 95%); margin: auto; padding: 20px; }
     .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .brand h1 { margin: 0; font-size: 1.8rem; }
-    .screen { background: #fff; border-radius: 20px; padding: 20px; min-height: 600px; }
+    .screen { background: #fff; border-radius: 20px; padding: 20px; min-height: 600px; display: flex; flex-direction: column; align-items: center; }
     button { cursor: pointer; padding: 12px 18px; border-radius: 12px; border: none; font-weight: bold; }
     .btn.primary { background: #5f6df3; color: #fff; }
     .btn.ghost { background: #fff; color: #172033; border: 1px solid #e6e9f2; }
     .choice-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); margin-top: 20px; }
     .choice-btn { border: 1px solid #e6e9f2; border-radius: 16px; padding: 18px 12px; text-align: center; }
     .choice-btn.selected { border-color: #5f6df3; background: #edf0ff; }
+    .visuals { display: flex; gap: 24px; margin-top: 20px; justify-content: center; }
+    .visual { display: flex; flex-direction: column; align-items: center; }
+    .visual img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #5f6df3; }
+    .visual span { margin-top: 8px; font-weight: 700; }
   </style>
 </head>
 <body>
@@ -35,16 +39,8 @@
   </div>
 
   <script>
-    // State initialization
-    const state = {
-      round: 0,
-      participant: { id: '', age: '', gender: '', screenTime: '', favoriteBrand: '', incomeGroup: 'middle', parentingStyle: 'balanced', familySize: 4 },
-      budget: 100,
-      response: {},
-      observations: []
-    };
+    const state = { round: 0, participant: { id: '', age: '', gender: '', screenTime: '', favoriteBrand: '', incomeGroup: 'middle', parentingStyle: 'balanced', familySize: 4 }, budget: 100, response: {}, observations: [] };
 
-    // Sample product data
     const products = [
       { id: 'toy', name: 'RoboBuddy', productType: 'Toy', price: 38, manipulations: { emotionalAppeal: 5, cartoonUsage: 5, discountFraming: 2, peerCue: 4 } },
       { id: 'snack', name: 'Crunchy Pops', productType: 'Snack', price: 8, manipulations: { emotionalAppeal: 4, cartoonUsage: 3, discountFraming: 4, peerCue: 5 } },
@@ -52,46 +48,19 @@
       { id: 'apparel', name: 'FlashStep Shoes', productType: 'Apparel', price: 62, manipulations: { emotionalAppeal: 4, cartoonUsage: 1, discountFraming: 2, peerCue: 5 } }
     ];
 
-    // Server endpoint
-    const serverEndpoint = 'https://your-server.com/submit'; // Replace with actual server URL
+    const serverEndpoint = 'https://your-server.com/submit';
 
     async function submitToServer(observation) {
       if (!observation) return;
-      try {
-        await fetch(serverEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(observation)
-        });
+      try { await fetch(serverEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(observation) });
         console.log('Observation sent to server:', observation);
-      } catch (err) {
-        console.error('Failed to send observation:', err);
-      }
+      } catch (err) { console.error('Failed to send observation:', err); }
     }
 
     function currentProduct() { return products[state.round]; }
 
     function recordObservation() {
-      const obs = {
-        timestamp: new Date().toISOString(),
-        participantId: state.participant.id,
-        age: state.participant.age,
-        gender: state.participant.gender,
-        screenTime: state.participant.screenTime,
-        favoriteBrand: state.participant.favoriteBrand,
-        incomeGroup: state.participant.incomeGroup,
-        parentingStyle: state.participant.parentingStyle,
-        familySize: state.participant.familySize,
-        round: state.round + 1,
-        productId: currentProduct().id,
-        productName: currentProduct().name,
-        productType: currentProduct().productType,
-        price: currentProduct().price,
-        budget: state.budget,
-        desire: state.response.desire || 0,
-        pestering: state.response.pestering || 0,
-        parentDecision: state.response.parentDecision || 'None'
-      };
+      const obs = { timestamp: new Date().toISOString(), participantId: state.participant.id, age: state.participant.age, gender: state.participant.gender, screenTime: state.participant.screenTime, favoriteBrand: state.participant.favoriteBrand, incomeGroup: state.participant.incomeGroup, parentingStyle: state.participant.parentingStyle, familySize: state.participant.familySize, round: state.round + 1, productId: currentProduct().id, productName: currentProduct().name, productType: currentProduct().productType, price: currentProduct().price, budget: state.budget, desire: state.response.desire || 0, pestering: state.response.pestering || 0, parentDecision: state.response.parentDecision || 'None' };
       state.observations.push(obs);
       submitToServer(obs);
     }
@@ -99,12 +68,15 @@
     function render() {
       const screen = document.getElementById('screen');
       const product = currentProduct();
-      if (!product) {
-        screen.innerHTML = '<h2>Game complete!</h2><p>Thank you for participating.</p>';
-        return;
-      }
+      if (!product) { screen.innerHTML = '<h2>Game complete!</h2><p>Thank you for participating.</p>'; return; }
+
       screen.innerHTML = `
         <h2>Round ${state.round + 1}: ${product.name}</h2>
+        <div class="visuals">
+          <div class="visual"><img src="https://i.imgur.com/5cXh5oK.png" alt="Child"><span>Child</span></div>
+          <div class="visual"><img src="https://i.imgur.com/3KQ0X2C.png" alt="Mother"><span>Mother</span></div>
+          <div class="visual"><img src="https://i.imgur.com/UL0X9q5.png" alt="Father"><span>Father</span></div>
+        </div>
         <p>How much do you want this product?</p>
         <div class="choice-grid">
           ${[1,2,3,4,5].map(n => `<button class="choice-btn" onclick="selectDesire(${n})">${n}</button>`).join('')}
@@ -114,8 +86,8 @@
 
     function selectDesire(value) {
       state.response.desire = value;
-      state.response.pestering = Math.ceil(value/2); // simple placeholder
-      state.response.parentDecision = value>3?'Buy':'Reject'; // simple placeholder
+      state.response.pestering = Math.ceil(value/2);
+      state.response.parentDecision = value>3?'Buy':'Reject';
       recordObservation();
       state.round += 1;
       render();
@@ -128,14 +100,8 @@
       const a = document.createElement('a'); a.href = url; a.download='observations.csv'; a.click();
     });
 
-    document.getElementById('copyBtn').addEventListener('click', () => {
-      navigator.clipboard.writeText(JSON.stringify(state.observations, null, 2));
-      alert('JSON copied to clipboard');
-    });
-
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      state.round=0; state.observations=[]; state.response={}; render();
-    });
+    document.getElementById('copyBtn').addEventListener('click', () => { navigator.clipboard.writeText(JSON.stringify(state.observations, null, 2)); alert('JSON copied to clipboard'); });
+    document.getElementById('resetBtn').addEventListener('click', () => { state.round=0; state.observations=[]; state.response={}; render(); });
 
     render();
   </script>
