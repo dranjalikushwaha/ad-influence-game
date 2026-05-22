@@ -372,22 +372,6 @@
       line-height: 1.6;
     }
 
-    .url-list {
-      display: grid;
-      gap: 10px;
-      margin: 18px 0;
-    }
-
-    .url-item {
-      border-radius: 16px;
-      background: #fff7ef;
-      border: 1px dashed rgba(222, 93, 47, 0.26);
-      padding: 14px 16px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.9rem;
-      word-break: break-word;
-    }
-
     .field-label {
       display: block;
       margin-bottom: 8px;
@@ -570,14 +554,12 @@
           <span>Participant details required</span>
         </div>
         <div class="setup-body">
-          <p>Before starting the survey, the participant must enter their name. After that, each ad will play automatically and the questions will appear only after the full video finishes.</p>
+          <p>Before starting the survey, the participant must enter their name. After that, each ad will start automatically and the questions will appear only after the full video finishes.</p>
           <label class="field-label" for="participantName">Participant Name</label>
           <input class="text-input" id="participantName" type="text" placeholder="Enter your name to begin" />
           <div class="field-hint" id="nameHint">The survey will begin only after a valid name is entered.</div>
-          <div class="url-list" id="urlList"></div>
           <div class="button-row">
             <button class="primary" onclick="startExperience()">Start Survey</button>
-            <button class="secondary" onclick="copyVideoTemplate()">Copy Video Template</button>
           </div>
         </div>
       </section>
@@ -592,7 +574,7 @@
             <div class="tv-screen" id="tvScreen">
               <div class="video-placeholder" id="videoPlaceholder">
                 <div>
-                  <h2>Press play to begin</h2>
+                  <h2>Survey will begin automatically</h2>
                   <p>The girls are watching the advertisement. After the video ends, the conversation and answer options will appear automatically.</p>
                 </div>
               </div>
@@ -685,8 +667,8 @@
       {
         id: "toy-ad",
         title: "Toy Advertisement",
-        note: "Replace this placeholder URL with your real toy ad YouTube link.",
-        url: "https://www.youtube.com/watch?v=NSAOrGb9orM",
+        note: "The first advertisement will begin automatically after the participant starts the survey.",
+        url: "https://youtube.com/watch?si=6v8lxd4w5yI8_sSC&v=wQzbbsTqxpw&feature=youtu.be",
         question: "How much do you want this toy after watching the ad?",
         options: [
           { value: "1", label: "1", description: "I do not want it." },
@@ -773,13 +755,6 @@
       return url;
     }
 
-    function updateSetupList() {
-      const list = document.getElementById("urlList");
-      list.innerHTML = videos.map((video, index) => `
-        <div class="url-item">Video ${index + 1}: ${video.url}</div>
-      `).join("");
-    }
-
     function updateProgress() {
       const label = state.started
         ? state.currentIndex < videos.length
@@ -812,7 +787,6 @@
       document.getElementById("roundLabel").textContent = `Ad ${state.currentIndex + 1} of ${videos.length}`;
       document.getElementById("videoTitle").textContent = current.title;
       document.getElementById("videoNote").textContent = current.note;
-      document.getElementById("nextButton").disabled = true;
       document.getElementById("options").classList.add("hidden");
       document.getElementById("options").innerHTML = "";
       document.getElementById("questionArrow").classList.add("hidden");
@@ -852,6 +826,8 @@
           videoId,
           playerVars: {
             autoplay: 1,
+            controls: 1,
+            playsinline: 1,
             rel: 0,
             modestbranding: 1
           },
@@ -867,6 +843,9 @@
     }
 
     function handlePlayerReady() {
+      if (player && typeof player.mute === "function") {
+        player.mute();
+      }
       if (player && typeof player.playVideo === "function") {
         player.playVideo();
       }
@@ -882,6 +861,9 @@
       ensurePlayer();
 
       if (player && typeof player.playVideo === "function") {
+        if (typeof player.mute === "function") {
+          player.mute();
+        }
         player.playVideo();
       }
 
@@ -908,6 +890,7 @@
       document.getElementById("questionHint").textContent = "Select one option below to record the response for this video.";
       document.getElementById("statusText").textContent = `The video ended. Select one response for ${current.title}.`;
       document.getElementById("questionArrow").classList.remove("hidden");
+      document.querySelector(".chat-stage").scrollIntoView({ behavior: "smooth", block: "start" });
 
       options.innerHTML = current.options.map((option) => `
         <button class="option" onclick="recordAnswer('${current.id}', '${escapeValue(option.value)}', '${escapeValue(option.label)}', '${escapeValue(current.question)}')">
@@ -1071,17 +1054,6 @@
       }
     }
 
-    async function copyVideoTemplate() {
-      const template = JSON.stringify(videos, null, 2);
-      try {
-        await navigator.clipboard.writeText(template);
-        alert("Video template copied. Replace the placeholder YouTube URLs in the videos array.");
-      } catch (error) {
-        alert("Clipboard access failed. The template is available in the videos array inside index.html.");
-      }
-    }
-
-    updateSetupList();
     updateProgress();
     updateDots();
   </script>
