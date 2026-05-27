@@ -515,6 +515,9 @@
   let userName = '';
   let userAge = '';
   let score = 0;
+  let responses = [];
+
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQUHc5ugq1jlCRVqEyU6YRXgSDwCXeCCaMBA7yXPznWbs1MBycA4RvzcEPP-Gx2ff1xw/exec';
 
   const videoPlayer = document.getElementById('videoPlayer');
   const questionOverlay = document.getElementById('questionOverlay');
@@ -573,6 +576,7 @@
       button.innerText = answer;
 
       button.onclick = () => {
+        responses.push(answer);
         button.style.background = '#f59e0b';
 
         setTimeout(() => {
@@ -621,6 +625,7 @@
       button.innerText = answer;
 
       button.onclick = () => {
+        responses.push(answer);
         button.style.background = '#f59e0b';
 
         setTimeout(() => {
@@ -649,13 +654,36 @@
     progressBar.style.width = `${(displayQuestion / totalQuestions) * 100}%`;
   }
 
-  function finishQuiz() {
+  async function finishQuiz() {
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: userName,
+          age: userAge,
+          consent: true,
+          question1: responses[0] || '',
+          question2: responses[1] || '',
+          submittedAt: new Date().toISOString()
+        })
+      });
+    } catch(error) {
+      console.log(error);
+    }
+
     quizContent.style.display = 'none';
     resultScreen.style.display = 'block';
+
     finalScore.innerText = `${userName}, age ${userAge}, thank you for completing the survey.`;
   }
 
   function restartQuiz() {
+    responses = [];
     currentIndex = 0;
     score = 0;
     currentQuestionIndex = 0;
