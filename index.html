@@ -185,6 +185,35 @@
 <body>
 
 <div class="container">
+
+  <div id="welcomeScreen" style="padding:60px 30px; text-align:center;">
+    <h1 style="font-size:48px; margin-bottom:15px;">Welcome</h1>
+    <p style="color:#aaa; margin-bottom:40px; font-size:18px;">Please enter your details before starting the quiz.</p>
+
+    <div style="max-width:500px; margin:0 auto; display:flex; flex-direction:column; gap:20px;">
+      <input 
+        type="text" 
+        id="userName" 
+        placeholder="Enter your name"
+        style="padding:18px; border-radius:14px; border:1px solid #333; background:#1a1a1a; color:white; font-size:18px; outline:none;"
+      >
+
+      <input 
+        type="number" 
+        id="userAge" 
+        placeholder="Enter your age"
+        style="padding:18px; border-radius:14px; border:1px solid #333; background:#1a1a1a; color:white; font-size:18px; outline:none;"
+      >
+
+      <button 
+        onclick="startQuiz()"
+        style="padding:18px; border:none; border-radius:14px; background:white; color:black; font-size:20px; font-weight:bold; cursor:pointer; transition:0.3s;"
+      >
+        Start Quiz
+      </button>
+    </div>
+  </div>
+  <div id="mainQuiz" style="display:none;">
   <div class="header">
     <div>
       <h1>Interactive Video Quiz</h1>
@@ -198,7 +227,13 @@
 
   <div id="quizContent">
     <div class="video-wrapper">
-      <video id="videoPlayer" autoplay controls></video>
+      <video id="videoPlayer" controls></video>
+
+      <div id="playOverlay" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.45); cursor:pointer; transition:0.3s;">
+        <button id="playButton" style="width:110px; height:110px; border-radius:50%; border:none; background:white; color:black; font-size:42px; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,0.5); transition:0.3s;">
+          ▶
+        </button>
+      </div>
 
       <div class="question-overlay" id="questionOverlay">
         <div class="question-box">
@@ -227,10 +262,12 @@
   </div>
 </div>
 
+</div>
+
 <script>
   const videoData = [
     {
-      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
+      video: './WhatsApp Video 2026-05-27 at 10.11.43.mp4',
       question: 'What color was the main object shown in the video?',
       answers: ['Blue', 'Red', 'Green', 'Yellow'],
       correct: 'Blue'
@@ -256,6 +293,8 @@
   ];
 
   let currentIndex = 0;
+  let userName = '';
+  let userAge = '';
   let score = 0;
 
   const videoPlayer = document.getElementById('videoPlayer');
@@ -268,6 +307,28 @@
   const resultScreen = document.getElementById('resultScreen');
   const finalScore = document.getElementById('finalScore');
   const quizContent = document.getElementById('quizContent');
+  const playOverlay = document.getElementById('playOverlay');
+  const playButton = document.getElementById('playButton');
+  const welcomeScreen = document.getElementById('welcomeScreen');
+  const mainQuiz = document.getElementById('mainQuiz');
+
+  function startQuiz() {
+    const nameInput = document.getElementById('userName').value.trim();
+    const ageInput = document.getElementById('userAge').value.trim();
+
+    if(nameInput === '' || ageInput === '') {
+      alert('Please enter both name and age.');
+      return;
+    }
+
+    userName = nameInput;
+    userAge = ageInput;
+
+    welcomeScreen.style.display = 'none';
+    mainQuiz.style.display = 'block';
+
+    mainQuiz.style.display = 'none';
+  }
 
   function loadVideo() {
     const current = videoData[currentIndex];
@@ -307,8 +368,23 @@
       answersContainer.appendChild(button);
     });
 
-    videoPlayer.play();
+    playOverlay.style.display = 'flex';
   }
+
+  playOverlay.addEventListener('click', () => {
+    videoPlayer.play();
+    playOverlay.style.display = 'none';
+  });
+
+  videoPlayer.addEventListener('play', () => {
+    playOverlay.style.display = 'none';
+  });
+
+  videoPlayer.addEventListener('pause', () => {
+    if(!videoPlayer.ended) {
+      playOverlay.style.display = 'flex';
+    }
+  });
 
   videoPlayer.addEventListener('ended', () => {
     questionOverlay.style.display = 'flex';
@@ -322,7 +398,7 @@
   function finishQuiz() {
     quizContent.style.display = 'none';
     resultScreen.style.display = 'block';
-    finalScore.innerText = `You scored ${score} out of 4.`;
+    finalScore.innerText = `${userName}, age ${userAge}, you scored ${score} out of 4.`;
   }
 
   function restartQuiz() {
