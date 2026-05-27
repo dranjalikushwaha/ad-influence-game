@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interactive Video Quiz</title>
+  <title>Interactive Video Survey</title>
   <style>
     * {
       margin: 0;
@@ -13,36 +13,44 @@
     }
 
     body {
-      background: #000;
+      background:
+        radial-gradient(circle at top left, rgba(99,102,241,0.25), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(168,85,247,0.22), transparent 30%),
+        linear-gradient(135deg, #050816 0%, #0f172a 45%, #111827 100%);
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      overflow-x: hidden;
     }
 
     .container {
       width: 100%;
       max-width: 1000px;
-      background: #111;
-      border-radius: 20px;
+      background: rgba(17, 24, 39, 0.72);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 28px;
       overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      border: 1px solid #222;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .header {
-      padding: 20px;
+      padding: 24px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #222;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
     }
 
     .header h1 {
-      font-size: 32px;
-      margin-bottom: 5px;
+      font-size: 34px;
+      margin-bottom: 6px;
+      letter-spacing: -0.5px;
     }
 
     .header p {
@@ -70,13 +78,15 @@
     }
 
     .question-box {
-      background: #181818;
-      padding: 40px;
-      border-radius: 20px;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(16px);
+      padding: 42px;
+      border-radius: 28px;
       width: 100%;
-      max-width: 700px;
+      max-width: 720px;
       text-align: center;
-      border: 1px solid #333;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
     }
 
     .question-box h2 {
@@ -92,18 +102,20 @@
 
     .answers button {
       padding: 18px;
-      border: none;
-      border-radius: 14px;
-      background: #2a2a2a;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
       color: white;
       font-size: 18px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s ease;
     }
 
     .answers button:hover {
-      background: #444;
-      transform: scale(1.03);
+      background: rgba(255,255,255,0.12);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(99,102,241,0.25);
     }
 
     .footer {
@@ -124,7 +136,7 @@
     .progress {
       height: 100%;
       width: 0%;
-      background: white;
+      background: linear-gradient(90deg, #8b5cf6, #6366f1, #06b6d4);
       transition: width 0.5s ease;
     }
 
@@ -188,7 +200,7 @@
 
   <div id="welcomeScreen" style="padding:60px 30px; text-align:center;">
     <h1 style="font-size:48px; margin-bottom:15px;">Welcome</h1>
-    <p style="color:#aaa; margin-bottom:40px; font-size:18px;">Please enter your details before starting the quiz.</p>
+    <p style="color:#aaa; margin-bottom:40px; font-size:18px;">Please enter your details before starting the survey.</p>
 
     <div style="max-width:500px; margin:0 auto; display:flex; flex-direction:column; gap:20px;">
       <input 
@@ -206,10 +218,11 @@
       >
 
       <button 
-        onclick="startQuiz()"
-        style="padding:18px; border:none; border-radius:14px; background:white; color:black; font-size:20px; font-weight:bold; cursor:pointer; transition:0.3s;"
+        onclick="startSurvey()"
+        style="padding:18px; border:none; border-radius:14px; background: linear-gradient(135deg, #8b5cf6, #6366f1);
+        color:white; font-size:20px; font-weight:bold; cursor:pointer; transition:0.3s;"
       >
-        Start Quiz
+        Start Survey
       </button>
     </div>
   </div>
@@ -217,7 +230,7 @@
   <div class="header">
     <div>
       <h1>Interactive Video Quiz</h1>
-      <p>Watch the video and answer the question to continue.</p>
+      <p>Watch the video and answer the survey questions.</p>
     </div>
 
     <div>
@@ -256,7 +269,7 @@
   </div>
 
   <div class="result-screen" id="resultScreen">
-    <h2>Quiz Completed 🎉</h2>
+    <h2>Survey Completed 🎉</h2>
     <p id="finalScore"></p>
     <button class="restart-btn" onclick="restartQuiz()">Restart Quiz</button>
   </div>
@@ -267,32 +280,33 @@
 <script>
   const videoData = [
     {
-      video: './WhatsApp Video 2026-05-27 at 10.11.43.mp4',
-      question: 'What color was the main object shown in the video?',
-      answers: ['Blue', 'Red', 'Green', 'Yellow'],
-      correct: 'Blue'
-    },
-    {
-      video: 'https://www.w3schools.com/html/movie.mp4',
-      question: 'What type of video was this?',
-      answers: ['Nature', 'Animation', 'Tutorial', 'Sports'],
-      correct: 'Nature'
-    },
-    {
-      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
-      question: 'What was shown in this video?',
-      answers: ['Cars', 'Flowers', 'Animals', 'Ocean'],
-      correct: 'Flowers'
-    },
-    {
-      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
-      question: 'Did you enjoy the interactive experience?',
-      answers: ['Yes', 'No', 'Maybe', 'Not Sure'],
-      correct: 'Yes'
+      video: encodeURI('./WhatsApp Video 2026-05-27 at 10.11.43.mp4'),
+      questions: [
+        {
+          question: 'Do you want this product?',
+          answers: [
+            'Do not want',
+            'Slightly want',
+            'Neutral',
+            'Want',
+            'Want Strongly'
+          ]
+        },
+        {
+          question: 'How many times would you ask your parents to buy this?',
+          answers: [
+            'Once',
+            'Twice',
+            'Many times',
+            'Keep insisting until bought'
+          ]
+        }
+      ]
     }
   ];
 
   let currentIndex = 0;
+  let currentQuestionIndex = 0;
   let userName = '';
   let userAge = '';
   let score = 0;
@@ -312,7 +326,7 @@
   const welcomeScreen = document.getElementById('welcomeScreen');
   const mainQuiz = document.getElementById('mainQuiz');
 
-  function startQuiz() {
+  function startSurvey() {
     const nameInput = document.getElementById('userName').value.trim();
     const ageInput = document.getElementById('userAge').value.trim();
 
@@ -327,37 +341,34 @@
     welcomeScreen.style.display = 'none';
     mainQuiz.style.display = 'block';
 
-    mainQuiz.style.display = 'none';
+    // Survey loads after clicking Start Survey
   }
 
   function loadVideo() {
+    questionOverlay.style.display = 'none';
     const current = videoData[currentIndex];
 
     videoPlayer.src = current.video;
-    questionText.innerText = current.question;
+    const currentQuestion = current.questions[currentQuestionIndex];
+
+    questionText.innerText = currentQuestion.question;
 
     answersContainer.innerHTML = '';
 
-    current.answers.forEach(answer => {
+    currentQuestion.answers.forEach(answer => {
       const button = document.createElement('button');
       button.innerText = answer;
 
       button.onclick = () => {
-        if(answer === current.correct) {
-          score++;
-          scoreText.innerText = score;
-          button.style.background = 'green';
-        } else {
-          button.style.background = 'red';
-        }
+        button.style.background = '#444';
 
         setTimeout(() => {
           questionOverlay.style.display = 'none';
 
-          currentIndex++;
+          currentQuestionIndex++;
 
-          if(currentIndex < videoData.length) {
-            updateProgress();
+          if(currentQuestionIndex < current.questions.length) {
+            questionOverlay.style.display = 'flex';
             loadVideo();
           } else {
             finishQuiz();
@@ -391,19 +402,20 @@
   });
 
   function updateProgress() {
-    progressText.innerText = `${Math.min(currentIndex + 1, 4)} / 4`;
-    progressBar.style.width = `${((currentIndex + 1) / 4) * 100}%`;
+    progressText.innerText = `${currentQuestionIndex + 1} / 2`;
+    progressBar.style.width = `${((currentQuestionIndex + 1) / 2) * 100}%`;
   }
 
   function finishQuiz() {
     quizContent.style.display = 'none';
     resultScreen.style.display = 'block';
-    finalScore.innerText = `${userName}, age ${userAge}, you scored ${score} out of 4.`;
+    finalScore.innerText = `${userName}, age ${userAge}, thank you for completing the survey.`;
   }
 
   function restartQuiz() {
     currentIndex = 0;
     score = 0;
+    currentQuestionIndex = 0;
     scoreText.innerText = '0';
 
     quizContent.style.display = 'block';
