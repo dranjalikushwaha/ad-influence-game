@@ -199,8 +199,9 @@
 <div class="container">
 
   <div id="welcomeScreen" style="padding:60px 30px; text-align:center;">
-    <h1 style="font-size:48px; margin-bottom:15px;">Welcome</h1>
-    <p style="color:#aaa; margin-bottom:40px; font-size:18px;">Please enter your details before starting the survey.</p>
+    <h1 style="font-size:48px; margin-bottom:10px;">Interactive Video Survey</h1>
+    <p style="font-size:20px; color:#cbd5e1; margin-bottom:8px;">Author: Anjali Kushwaha, Gautam Buddha University</p>
+    <p style="color:#aaa; margin-bottom:40px; font-size:18px;">Please provide your details before starting the survey.</p>
 
     <div style="max-width:500px; margin:0 auto; display:flex; flex-direction:column; gap:20px;">
       <input 
@@ -217,6 +218,11 @@
         style="padding:18px; border-radius:14px; border:1px solid #333; background:#1a1a1a; color:white; font-size:18px; outline:none;"
       >
 
+      <label style="display:flex; align-items:flex-start; gap:12px; color:#cbd5e1; font-size:16px; text-align:left; background:rgba(255,255,255,0.04); padding:16px; border-radius:14px; border:1px solid rgba(255,255,255,0.08);">
+        <input type="checkbox" id="consentCheckbox" style="margin-top:4px; width:18px; height:18px; cursor:pointer;">
+        <span>I voluntarily agree to participate in this survey and consent to the use of my responses for academic research purposes.</span>
+      </label>
+
       <button 
         onclick="startSurvey()"
         style="padding:18px; border:none; border-radius:14px; background: linear-gradient(135deg, #8b5cf6, #6366f1);
@@ -229,7 +235,7 @@
   <div id="mainQuiz" style="display:none;">
   <div class="header">
     <div>
-      <h1>Intracative Video Survay</h1>
+      <h1>Interactive Video Survey</h1>
       <p>Author: Anjali Kushwaha, Gautam Buddha University</p>
     </div>
 
@@ -323,8 +329,15 @@
     const nameInput = document.getElementById('userName').value.trim();
     const ageInput = document.getElementById('userAge').value.trim();
 
+    const consentChecked = document.getElementById('consentCheckbox').checked;
+
     if(nameInput === '' || ageInput === '') {
       alert('Please enter both name and age.');
+      return;
+    }
+
+    if(!consentChecked) {
+      alert('Please provide your consent before starting the survey.');
       return;
     }
 
