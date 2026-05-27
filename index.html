@@ -439,8 +439,11 @@
   }
 
   function updateProgress() {
-    progressText.innerText = `Question ${currentQuestionIndex + 1} of 2`;
-    progressBar.style.width = `${((currentQuestionIndex + 1) / 2) * 100}%`;
+    const totalQuestions = videoData[0].questions.length;
+    const displayQuestion = Math.min(currentQuestionIndex + 1, totalQuestions);
+
+    progressText.innerText = `Question ${displayQuestion} of ${totalQuestions}`;
+    progressBar.style.width = `${(displayQuestion / totalQuestions) * 100}%`;
   }
 
   function finishQuiz() {
