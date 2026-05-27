@@ -1,1061 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advertisement Influence Study</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Video Quiz</title>
   <style>
-    :root {
-      --bg-top: #f8e8c9;
-      --bg-bottom: #f6c992;
-      --panel: rgba(255, 249, 239, 0.92);
-      --card: #fffdf8;
-      --ink: #2b2230;
-      --muted: #6d6372;
-      --line: rgba(43, 34, 48, 0.1);
-      --accent: #de5d2f;
-      --accent-deep: #a43d16;
-      --mint: #7bc8a4;
-      --lavender: #cab8ff;
-      --shadow: 0 24px 60px rgba(84, 47, 14, 0.18);
-    }
-
     * {
+      margin: 0;
+      padding: 0;
       box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Trebuchet MS", "Avenir Next", sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.45), transparent 26%),
-        linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
-    }
-
-    .app {
-      width: min(1180px, calc(100% - 28px));
-      margin: 18px auto 32px;
-    }
-
-    .hero {
+      background: #000;
+      color: #fff;
       display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      align-items: flex-start;
-      margin-bottom: 18px;
-    }
-
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: clamp(2.2rem, 4vw, 3.8rem);
-      line-height: 0.95;
-      letter-spacing: -0.04em;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 700px;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 1rem;
-    }
-
-    .author {
-      margin-top: 12px;
-      color: var(--accent-deep);
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
-
-    .badge {
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid rgba(43, 34, 48, 0.08);
-      padding: 12px 16px;
-      color: var(--muted);
-      white-space: nowrap;
-      font-weight: 700;
-    }
-
-    .room {
-      background: var(--panel);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-radius: 32px;
-      box-shadow: var(--shadow);
-      padding: 22px;
-      backdrop-filter: blur(10px);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 22px;
-      align-items: start;
-    }
-
-    .tv-stage,
-    .chat-stage,
-    .summary-card,
-    .setup-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      overflow: hidden;
-    }
-
-    .stage-header,
-    .chat-header,
-    .summary-header,
-    .setup-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
+      justify-content: center;
       align-items: center;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
+      min-height: 100vh;
+      padding: 20px;
     }
 
-    .stage-header strong,
-    .chat-header strong,
-    .summary-header strong,
-    .setup-header strong {
-      font-size: 1rem;
-    }
-
-    .stage-header span,
-    .chat-header span,
-    .summary-header span,
-    .setup-header span {
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .tv-shell {
-      margin: 20px;
-      background: #221d2f;
-      border-radius: 34px;
-      padding: 16px;
-      box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.05);
-    }
-
-    .tv-screen {
-      aspect-ratio: 16 / 9;
-      border-radius: 22px;
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      background: #111;
+      border-radius: 20px;
       overflow: hidden;
-      background: linear-gradient(180deg, #14111b 0%, #2e253b 100%);
-      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      border: 1px solid #222;
     }
 
-    #player,
-    .video-placeholder {
+    .header {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #222;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      color: #aaa;
+    }
+
+    video {
+      width: 100%;
+      height: 550px;
+      object-fit: cover;
+      background: black;
+    }
+
+    .question-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    .video-placeholder {
-      display: grid;
-      place-items: center;
-      padding: 28px;
+    .question-box {
+      background: #181818;
+      padding: 40px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 700px;
       text-align: center;
-      color: #fff7ee;
+      border: 1px solid #333;
     }
 
-    .video-placeholder h2 {
-      margin: 0 0 10px;
-      font-size: clamp(1.8rem, 4vw, 2.8rem);
+    .question-box h2 {
+      margin-bottom: 30px;
+      font-size: 30px;
     }
 
-    .video-placeholder p {
-      margin: 0;
-      max-width: 34ch;
-      line-height: 1.6;
-      color: rgba(255, 247, 238, 0.8);
-    }
-
-    .tv-legs {
-      display: flex;
-      justify-content: space-between;
-      padding: 0 72px 16px;
-    }
-
-    .tv-legs span {
-      display: block;
-      width: 14px;
-      height: 54px;
-      border-radius: 999px;
-      background: #4a3b33;
-      transform: rotate(18deg);
-    }
-
-    .tv-legs span:last-child {
-      transform: rotate(-18deg);
-    }
-
-    .video-info {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      padding: 0 20px 20px;
-      flex-wrap: wrap;
-    }
-
-    .video-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-    }
-
-    .video-note {
-      color: var(--muted);
-      line-height: 1.5;
-      max-width: 56ch;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: #fff1e8;
-      color: var(--accent-deep);
-      border: 1px solid rgba(222, 93, 47, 0.18);
-      font-weight: 700;
-    }
-
-    .chat-body {
-      padding: 20px;
+    .answers {
       display: grid;
-      gap: 16px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
     }
 
-    .girls-row {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .girl-card {
-      border-radius: 22px;
+    .answers button {
       padding: 18px;
-      min-height: 146px;
-      position: relative;
-    }
-
-    .girl-card h3 {
-      margin: 0 0 10px;
-      font-size: 1rem;
-    }
-
-    .girl-card p {
-      margin: 0;
-      line-height: 1.55;
-    }
-
-    .girl-one {
-      background: linear-gradient(180deg, #fff4cf 0%, #ffe9a8 100%);
-    }
-
-    .girl-two {
-      background: linear-gradient(180deg, #efe8ff 0%, #dcd1ff 100%);
-    }
-
-    .avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      font-size: 1.8rem;
-      background: rgba(255, 255, 255, 0.64);
-      margin-bottom: 10px;
-    }
-
-    .prompt-box,
-    .status-box,
-    .setup-body,
-    .results-grid {
-      padding: 20px;
-    }
-
-    .prompt-box {
-      border-top: 1px solid var(--line);
-      background: rgba(255, 252, 246, 0.8);
-    }
-
-    .prompt-box h2 {
-      margin: 0 0 8px;
-      font-size: 1.6rem;
-      line-height: 1.1;
-    }
-
-    .prompt-box p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .options {
-      display: grid;
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .option {
-      width: 100%;
-      text-align: left;
-      border: 1px solid rgba(43, 34, 48, 0.1);
-      background: white;
-      color: var(--ink);
-      border-radius: 18px;
-      padding: 14px 16px;
-      cursor: pointer;
-      font: inherit;
-      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
-    }
-
-    .option:hover {
-      transform: translateY(-2px);
-      border-color: rgba(222, 93, 47, 0.34);
-      box-shadow: 0 14px 24px rgba(43, 34, 48, 0.08);
-    }
-
-    .option strong {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 1rem;
-    }
-
-    .option span {
-      display: block;
-      color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.45;
-    }
-
-    .status-box {
-      border-top: 1px solid var(--line);
-      background: #fff8f4;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .status-box strong {
-      color: var(--ink);
-    }
-
-    .progress-dots {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .progress-dots span {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: rgba(43, 34, 48, 0.14);
-    }
-
-    .progress-dots .done,
-    .progress-dots .active {
-      background: var(--accent);
-    }
-
-    .setup-body p,
-    .results-grid p {
-      margin: 0 0 16px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .field-label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 800;
-      color: var(--ink);
-    }
-
-    .text-input {
-      width: 100%;
-      max-width: 440px;
-      border: 1px solid rgba(43, 34, 48, 0.12);
-      border-radius: 16px;
-      padding: 14px 16px;
-      font: inherit;
-      font-size: 1rem;
-      color: var(--ink);
-      background: white;
-      outline: none;
-    }
-
-    .text-input:focus {
-      border-color: rgba(222, 93, 47, 0.45);
-      box-shadow: 0 0 0 4px rgba(222, 93, 47, 0.08);
-    }
-
-    .field-hint {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .arrow-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 14px;
-      color: var(--accent-deep);
-      font-weight: 800;
-    }
-
-    .arrow-icon {
-      display: inline-grid;
-      place-items: center;
-      width: 34px;
-      height: 34px;
-      border-radius: 999px;
-      background: #fff1e8;
-      border: 1px solid rgba(222, 93, 47, 0.2);
-      animation: bounceArrow 1s ease-in-out infinite;
-    }
-
-    @keyframes bounceArrow {
-      0%, 100% {
-        transform: translateX(0);
-      }
-      50% {
-        transform: translateX(6px);
-      }
-    }
-
-    .button-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-    }
-
-    button.primary,
-    button.secondary,
-    button.ghost {
       border: none;
-      border-radius: 18px;
-      padding: 14px 18px;
+      border-radius: 14px;
+      background: #2a2a2a;
+      color: white;
+      font-size: 18px;
       cursor: pointer;
-      font: inherit;
-      font-weight: 800;
+      transition: 0.3s;
     }
 
-    button.primary {
-      background: var(--accent);
-      color: #fff6f1;
-      box-shadow: 0 18px 34px rgba(222, 93, 47, 0.24);
+    .answers button:hover {
+      background: #444;
+      transform: scale(1.03);
     }
 
-    button.secondary {
-      background: #fff;
-      color: var(--ink);
-      border: 1px solid rgba(43, 34, 48, 0.1);
+    .footer {
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    button.ghost {
-      background: transparent;
-      color: var(--muted);
-      border: 1px dashed rgba(43, 34, 48, 0.18);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-      background: white;
-      border-radius: 18px;
+    .progress-bar {
+      width: 250px;
+      height: 12px;
+      background: #222;
+      border-radius: 20px;
       overflow: hidden;
     }
 
-    th,
-    td {
-      padding: 12px 14px;
-      text-align: left;
-      border-bottom: 1px solid rgba(43, 34, 48, 0.08);
-      font-size: 0.94rem;
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: white;
+      transition: width 0.5s ease;
     }
 
-    th {
-      background: #fff6ef;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .hidden {
+    .result-screen {
       display: none;
+      text-align: center;
+      padding: 80px 20px;
     }
 
-    @media (max-width: 980px) {
-      .layout {
+    .result-screen h2 {
+      font-size: 50px;
+      margin-bottom: 20px;
+    }
+
+    .result-screen p {
+      font-size: 24px;
+      color: #bbb;
+      margin-bottom: 30px;
+    }
+
+    .restart-btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      background: white;
+      color: black;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .restart-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .video-wrapper {
+      position: relative;
+    }
+
+    @media(max-width: 768px) {
+      .answers {
         grid-template-columns: 1fr;
       }
-    }
 
-    @media (max-width: 680px) {
-      .hero {
+      video {
+        height: 300px;
+      }
+
+      .header {
         flex-direction: column;
-      }
-
-      .room {
-        padding: 14px;
-      }
-
-      .girls-row {
-        grid-template-columns: 1fr;
-      }
-
-      .tv-shell {
-        margin: 14px;
-      }
-
-      .stage-header,
-      .chat-header,
-      .summary-header,
-      .setup-header,
-      .video-info,
-      .chat-body,
-      .prompt-box,
-      .status-box,
-      .setup-body,
-      .results-grid {
-        padding-left: 16px;
-        padding-right: 16px;
+        gap: 10px;
+        text-align: center;
       }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="hero">
-      <div>
-        <h1>Advertisement Influence Study</h1>
-        <p>Two girls watch each advertisement on TV. When the video finishes, Girl 1 asks the question and Girl 2 presents the response options for the user to select. The same flow repeats for all 4 YouTube ads.</p>
-        <div class="author">Author: Anjali Kushwaha, Gautam Buddha University</div>
-      </div>
-      <div class="badge" id="progressBadge">Setup</div>
-    </header>
 
-    <main class="room">
-      <section class="setup-card" id="setupCard">
-        <div class="setup-header">
-          <strong>Survey Start</strong>
-          <span>Participant details required</span>
-        </div>
-        <div class="setup-body">
-          <p>Before starting the survey, the participant must enter their name. After that, each ad will start automatically and the questions will appear only after the full video finishes.</p>
-          <label class="field-label" for="participantName">Participant Name</label>
-          <input class="text-input" id="participantName" type="text" placeholder="Enter your name to begin" />
-          <div class="field-hint" id="nameHint">The survey will begin only after a valid name is entered.</div>
-          <div class="button-row">
-            <button class="primary" onclick="startExperience()">Start Survey</button>
-          </div>
-        </div>
-      </section>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>Interactive Video Quiz</h1>
+      <p>Watch the video and answer the question to continue.</p>
+    </div>
 
-      <section class="layout hidden" id="experience">
-        <section class="tv-stage">
-          <div class="stage-header">
-            <strong>Living Room TV</strong>
-            <span id="roundLabel">Ad 1 of 4</span>
-          </div>
-          <div class="tv-shell">
-            <div class="tv-screen" id="tvScreen">
-              <div class="video-placeholder" id="videoPlaceholder">
-                <div>
-                  <h2>Survey will begin automatically</h2>
-                  <p>The girls are watching the advertisement. After the video ends, the conversation and answer options will appear automatically.</p>
-                </div>
-              </div>
-              <div id="player" class="hidden"></div>
-            </div>
-          </div>
-          <div class="tv-legs">
-            <span></span>
-            <span></span>
-          </div>
-          <div class="video-info">
-            <div>
-              <div class="video-title" id="videoTitle">Toy Advertisement</div>
-              <div class="video-note" id="videoNote">A short ad plays here from YouTube.</div>
-            </div>
-            <div class="chip" id="videoStatus">Waiting to start</div>
-          </div>
-        </section>
-
-        <section class="chat-stage">
-          <div class="chat-header">
-            <strong>Girls' Conversation</strong>
-            <span id="chatMode">Watching TV</span>
-          </div>
-          <div class="chat-body">
-            <div class="girls-row">
-              <article class="girl-card girl-one">
-                <div class="avatar">👧</div>
-                <h3>Girl 1</h3>
-                <p id="girlOneText">Let's watch the ad first.</p>
-              </article>
-              <article class="girl-card girl-two">
-                <div class="avatar">👧</div>
-                <h3>Girl 2</h3>
-                <p id="girlTwoText">I will answer after the video finishes.</p>
-              </article>
-            </div>
-          </div>
-          <div class="prompt-box">
-            <h2 id="questionTitle">Question will appear after the video ends</h2>
-            <p id="questionHint">The user can only answer after the full advertisement has been watched.</p>
-            <div class="arrow-wrap hidden" id="questionArrow">
-              <span class="arrow-icon">→</span>
-              <span>Now answer the question below</span>
-            </div>
-            <div class="options hidden" id="options"></div>
-          </div>
-          <div class="status-box">
-            <strong>Progress</strong>
-            <div id="statusText">The survey will auto-play the first video after the participant starts.</div>
-            <div class="progress-dots" id="progressDots"></div>
-            <div class="button-row">
-              <button class="ghost" onclick="restartExperience()">Restart</button>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <section class="summary-card hidden" id="summaryCard">
-        <div class="summary-header">
-          <strong>Study Summary</strong>
-          <span>All 4 responses captured</span>
-        </div>
-        <div class="results-grid">
-          <p>The user has completed all advertisements. You can export the responses or restart the full experience.</p>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Ad</th>
-                <th>Question</th>
-                <th>Selected Answer</th>
-              </tr>
-            </thead>
-            <tbody id="resultsTable"></tbody>
-          </table>
-          <div class="button-row">
-            <button class="primary" onclick="downloadCSV()">Export CSV</button>
-            <button class="secondary" onclick="copyJSON()">Copy JSON</button>
-            <button class="ghost" onclick="restartExperience()">Restart</button>
-          </div>
-        </div>
-      </section>
-    </main>
+    <div>
+      <strong id="progressText">1 / 4</strong>
+    </div>
   </div>
 
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script>
-    const videos = [
-      {
-        id: "toy-ad",
-        title: "Toy Advertisement",
-        note: "The first advertisement will begin automatically after the participant starts the survey.",
-        url: "https://youtube.com/watch?si=6v8lxd4w5yI8_sSC&v=wQzbbsTqxpw&feature=youtu.be",
-        question: "How much do you want this toy after watching the ad?",
-        options: [
-          { value: "1", label: "1", description: "I do not want it." },
-          { value: "2", label: "2", description: "I want it a little." },
-          { value: "3", label: "3", description: "I might want it." },
-          { value: "4", label: "4", description: "I want it a lot." },
-          { value: "5", label: "5", description: "I want it very strongly." }
-        ]
-      },
-      {
-        id: "snack-ad",
-        title: "Snack Advertisement",
-        note: "Replace this placeholder URL with your real snack ad YouTube link.",
-        url: "https://www.youtube.com/watch?v=aqz-KE-bpKQ",
-        question: "After this snack ad, how likely are you to ask for this product?",
-        options: [
-          { value: "never", label: "Never", description: "I would not ask for it." },
-          { value: "once", label: "Once", description: "I would ask one time." },
-          { value: "twice", label: "Twice", description: "I would ask two times." },
-          { value: "many-times", label: "Many times", description: "I would ask repeatedly." }
-        ]
-      },
-      {
-        id: "education-ad",
-        title: "Educational Product Advertisement",
-        note: "Replace this placeholder URL with your real educational ad YouTube link.",
-        url: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
-        question: "Do you think this educational product looks interesting?",
-        options: [
-          { value: "not-interesting", label: "Not interesting", description: "The ad did not attract me." },
-          { value: "slightly-interesting", label: "Slightly interesting", description: "It looks a little useful." },
-          { value: "interesting", label: "Interesting", description: "It looks engaging." },
-          { value: "very-interesting", label: "Very interesting", description: "I really want to try it." }
-        ]
-      },
-      {
-        id: "apparel-ad",
-        title: "Apparel Advertisement",
-        note: "Replace this placeholder URL with your real apparel ad YouTube link.",
-        url: "https://www.youtube.com/watch?v=ysz5S6PUM-U",
-        question: "Would you ask your parents to buy this apparel item?",
-        options: [
-          { value: "no", label: "No", description: "I would not ask for it." },
-          { value: "maybe", label: "Maybe", description: "I might ask if I still remember it later." },
-          { value: "yes", label: "Yes", description: "I would ask for it." },
-          { value: "definitely", label: "Definitely", description: "I would strongly ask for it." }
-        ]
-      }
-    ];
+  <div id="quizContent">
+    <div class="video-wrapper">
+      <video id="videoPlayer" autoplay controls></video>
 
-    const state = {
-      participantName: "",
-      currentIndex: 0,
-      answers: [],
-      videoEnded: false,
-      started: false,
-      autoAdvanceTimer: null
-    };
+      <div class="question-overlay" id="questionOverlay">
+        <div class="question-box">
+          <h2 id="questionText"></h2>
+          <div class="answers" id="answersContainer"></div>
+        </div>
+      </div>
+    </div>
 
-    let player = null;
-    let youtubeReady = false;
+    <div class="footer">
+      <div>
+        <div style="color:#999; font-size:14px;">Score</div>
+        <div style="font-size:30px; font-weight:bold;" id="scoreText">0</div>
+      </div>
 
-    function onYouTubeIframeAPIReady() {
-      youtubeReady = true;
+      <div class="progress-bar">
+        <div class="progress" id="progressBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <h2>Quiz Completed 🎉</h2>
+    <p id="finalScore"></p>
+    <button class="restart-btn" onclick="restartQuiz()">Restart Quiz</button>
+  </div>
+</div>
+
+<script>
+  const videoData = [
+    {
+      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
+      question: 'What color was the main object shown in the video?',
+      answers: ['Blue', 'Red', 'Green', 'Yellow'],
+      correct: 'Blue'
+    },
+    {
+      video: 'https://www.w3schools.com/html/movie.mp4',
+      question: 'What type of video was this?',
+      answers: ['Nature', 'Animation', 'Tutorial', 'Sports'],
+      correct: 'Nature'
+    },
+    {
+      video: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+      question: 'What was shown in this video?',
+      answers: ['Cars', 'Flowers', 'Animals', 'Ocean'],
+      correct: 'Flowers'
+    },
+    {
+      video: 'https://www.w3schools.com/html/mov_bbb.mp4',
+      question: 'Did you enjoy the interactive experience?',
+      answers: ['Yes', 'No', 'Maybe', 'Not Sure'],
+      correct: 'Yes'
     }
+  ];
 
-    function getVideoId(url) {
-      try {
-        const parsed = new URL(url);
-        if (parsed.hostname.includes("youtu.be")) {
-          return parsed.pathname.replace("/", "");
+  let currentIndex = 0;
+  let score = 0;
+
+  const videoPlayer = document.getElementById('videoPlayer');
+  const questionOverlay = document.getElementById('questionOverlay');
+  const questionText = document.getElementById('questionText');
+  const answersContainer = document.getElementById('answersContainer');
+  const progressText = document.getElementById('progressText');
+  const progressBar = document.getElementById('progressBar');
+  const scoreText = document.getElementById('scoreText');
+  const resultScreen = document.getElementById('resultScreen');
+  const finalScore = document.getElementById('finalScore');
+  const quizContent = document.getElementById('quizContent');
+
+  function loadVideo() {
+    const current = videoData[currentIndex];
+
+    videoPlayer.src = current.video;
+    questionText.innerText = current.question;
+
+    answersContainer.innerHTML = '';
+
+    current.answers.forEach(answer => {
+      const button = document.createElement('button');
+      button.innerText = answer;
+
+      button.onclick = () => {
+        if(answer === current.correct) {
+          score++;
+          scoreText.innerText = score;
+          button.style.background = 'green';
+        } else {
+          button.style.background = 'red';
         }
-        if (parsed.searchParams.get("v")) {
-          return parsed.searchParams.get("v");
-        }
-        const parts = parsed.pathname.split("/");
-        const embedIndex = parts.indexOf("embed");
-        if (embedIndex >= 0 && parts[embedIndex + 1]) {
-          return parts[embedIndex + 1];
-        }
-      } catch (error) {
-        return url;
-      }
-      return url;
-    }
 
-    function updateProgress() {
-      const label = state.started
-        ? state.currentIndex < videos.length
-          ? `Video ${state.currentIndex + 1} of ${videos.length}`
-          : "Complete"
-        : "Setup";
-      document.getElementById("progressBadge").textContent = label;
-    }
+        setTimeout(() => {
+          questionOverlay.style.display = 'none';
 
-    function updateDots() {
-      const dots = document.getElementById("progressDots");
-      dots.innerHTML = videos.map((_, index) => {
-        let className = "";
-        if (index < state.answers.length) {
-          className = "done";
-        } else if (index === state.currentIndex && state.currentIndex < videos.length) {
-          className = "active";
-        }
-        return `<span class="${className}"></span>`;
-      }).join("");
-    }
+          currentIndex++;
 
-    function updateExperienceView() {
-      if (state.currentIndex >= videos.length) {
-        renderSummary();
-        return;
-      }
-
-      const current = videos[state.currentIndex];
-      document.getElementById("roundLabel").textContent = `Ad ${state.currentIndex + 1} of ${videos.length}`;
-      document.getElementById("videoTitle").textContent = current.title;
-      document.getElementById("videoNote").textContent = current.note;
-      document.getElementById("options").classList.add("hidden");
-      document.getElementById("options").innerHTML = "";
-      document.getElementById("questionArrow").classList.add("hidden");
-      document.getElementById("chatMode").textContent = state.videoEnded ? "Question Time" : "Watching TV";
-
-      if (!state.videoEnded) {
-        document.getElementById("girlOneText").textContent = "Let's watch this advertisement carefully.";
-        document.getElementById("girlTwoText").textContent = "I will answer after the video finishes.";
-        document.getElementById("questionTitle").textContent = "Question will appear after the video ends";
-        document.getElementById("questionHint").textContent = "The user can only answer after the full advertisement has been watched.";
-        document.getElementById("videoStatus").textContent = "Playing automatically";
-        document.getElementById("statusText").textContent = `Watching ${current.title}. The survey will not allow skipping this video.`;
-      } else {
-        showQuestion();
-      }
-
-      updateProgress();
-      updateDots();
-    }
-
-    function ensurePlayer() {
-      const current = videos[state.currentIndex];
-      const videoId = getVideoId(current.url);
-      const placeholder = document.getElementById("videoPlaceholder");
-      const playerNode = document.getElementById("player");
-
-      placeholder.classList.add("hidden");
-      playerNode.classList.remove("hidden");
-
-      if (!youtubeReady) {
-        document.getElementById("statusText").textContent = "YouTube player is still loading. Try again in a moment.";
-        return;
-      }
-
-      if (!player) {
-        player = new YT.Player("player", {
-          videoId,
-          playerVars: {
-            autoplay: 1,
-            controls: 1,
-            playsinline: 1,
-            rel: 0,
-            modestbranding: 1
-          },
-          events: {
-            onReady: handlePlayerReady,
-            onStateChange: handlePlayerStateChange
+          if(currentIndex < videoData.length) {
+            updateProgress();
+            loadVideo();
+          } else {
+            finishQuiz();
           }
-        });
-        return;
-      }
+        }, 1500);
+      };
 
-      player.loadVideoById(videoId);
-    }
+      answersContainer.appendChild(button);
+    });
 
-    function handlePlayerReady() {
-      if (player && typeof player.mute === "function") {
-        player.mute();
-      }
-      if (player && typeof player.playVideo === "function") {
-        player.playVideo();
-      }
-    }
+    videoPlayer.play();
+  }
 
-    function startCurrentVideo() {
-      if (state.currentIndex >= videos.length) {
-        return;
-      }
+  videoPlayer.addEventListener('ended', () => {
+    questionOverlay.style.display = 'flex';
+  });
 
-      state.videoEnded = false;
-      updateExperienceView();
-      ensurePlayer();
+  function updateProgress() {
+    progressText.innerText = `${Math.min(currentIndex + 1, 4)} / 4`;
+    progressBar.style.width = `${((currentIndex + 1) / 4) * 100}%`;
+  }
 
-      if (player && typeof player.playVideo === "function") {
-        if (typeof player.mute === "function") {
-          player.mute();
-        }
-        player.playVideo();
-      }
+  function finishQuiz() {
+    quizContent.style.display = 'none';
+    resultScreen.style.display = 'block';
+    finalScore.innerText = `You scored ${score} out of 4.`;
+  }
 
-      document.getElementById("videoStatus").textContent = "Playing";
-      document.getElementById("statusText").textContent = `Watching ${videos[state.currentIndex].title}. Waiting for the video to finish.`;
-    }
+  function restartQuiz() {
+    currentIndex = 0;
+    score = 0;
+    scoreText.innerText = '0';
 
-    function handlePlayerStateChange(event) {
-      if (event.data === YT.PlayerState.ENDED) {
-        state.videoEnded = true;
-        document.getElementById("videoStatus").textContent = "Finished";
-        showQuestion();
-      }
-    }
-
-    function showQuestion() {
-      const current = videos[state.currentIndex];
-      const options = document.getElementById("options");
-
-      document.getElementById("chatMode").textContent = "Question Time";
-      document.getElementById("girlOneText").textContent = current.question;
-      document.getElementById("girlTwoText").textContent = "Choose the answer that fits best.";
-      document.getElementById("questionTitle").textContent = current.question;
-      document.getElementById("questionHint").textContent = "Select one option below to record the response for this video.";
-      document.getElementById("statusText").textContent = `The video ended. Select one response for ${current.title}.`;
-      document.getElementById("questionArrow").classList.remove("hidden");
-      document.querySelector(".chat-stage").scrollIntoView({ behavior: "smooth", block: "start" });
-
-      options.innerHTML = current.options.map((option) => `
-        <button class="option" onclick="recordAnswer('${current.id}', '${escapeValue(option.value)}', '${escapeValue(option.label)}', '${escapeValue(current.question)}')">
-          <strong>${escapeHtml(option.label)}</strong>
-          <span>${escapeHtml(option.description)}</span>
-        </button>
-      `).join("");
-      options.classList.remove("hidden");
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
-    }
-
-    function escapeValue(value) {
-      return String(value).replaceAll("\\", "\\\\").replaceAll("'", "\\'");
-    }
-
-    function recordAnswer(videoId, value, label, question) {
-      const current = videos[state.currentIndex];
-      if (state.answers.length > state.currentIndex) {
-        return;
-      }
-
-      state.answers.push({
-        participantName: state.participantName,
-        videoId,
-        title: current.title,
-        question,
-        answerValue: value,
-        answerLabel: label,
-        recordedAt: new Date().toISOString()
-      });
-
-      document.getElementById("videoStatus").textContent = "Answer saved";
-      document.getElementById("statusText").textContent = `Response recorded for ${current.title}. Loading the next video automatically.`;
-      document.getElementById("girlTwoText").textContent = `I choose: ${label}`;
-      document.getElementById("options").classList.add("hidden");
-      document.getElementById("questionArrow").classList.add("hidden");
-      updateDots();
-
-      clearTimeout(state.autoAdvanceTimer);
-      state.autoAdvanceTimer = setTimeout(() => {
-        goToNextVideo();
-      }, 900);
-    }
-
-    function goToNextVideo() {
-      if (state.answers.length <= state.currentIndex) {
-        return;
-      }
-
-      state.currentIndex += 1;
-      state.videoEnded = false;
-
-      if (state.currentIndex >= videos.length) {
-        renderSummary();
-        return;
-      }
-
-      if (player && typeof player.stopVideo === "function") {
-        player.stopVideo();
-      }
-
-      updateExperienceView();
-      startCurrentVideo();
-    }
-
-    function renderSummary() {
-      document.getElementById("experience").classList.add("hidden");
-      document.getElementById("summaryCard").classList.remove("hidden");
-      document.getElementById("progressBadge").textContent = "Complete";
-
-      document.getElementById("resultsTable").innerHTML = state.answers.map((item) => `
-        <tr>
-          <td>${escapeHtml(item.participantName)}</td>
-          <td>${escapeHtml(item.title)}</td>
-          <td>${escapeHtml(item.question)}</td>
-          <td>${escapeHtml(item.answerLabel)}</td>
-        </tr>
-      `).join("");
-    }
-
-    function startExperience() {
-      const nameInput = document.getElementById("participantName");
-      const participantName = nameInput.value.trim();
-
-      if (!participantName) {
-        document.getElementById("nameHint").textContent = "Please enter the participant name before starting the survey.";
-        nameInput.focus();
-        return;
-      }
-
-      state.participantName = participantName;
-      state.started = true;
-      document.getElementById("setupCard").classList.add("hidden");
-      document.getElementById("summaryCard").classList.add("hidden");
-      document.getElementById("experience").classList.remove("hidden");
-      updateExperienceView();
-      startCurrentVideo();
-    }
-
-    function restartExperience() {
-      clearTimeout(state.autoAdvanceTimer);
-      state.participantName = "";
-      state.currentIndex = 0;
-      state.answers = [];
-      state.videoEnded = false;
-      state.started = false;
-
-      if (player && typeof player.stopVideo === "function") {
-        player.stopVideo();
-      }
-
-      document.getElementById("setupCard").classList.remove("hidden");
-      document.getElementById("experience").classList.add("hidden");
-      document.getElementById("summaryCard").classList.add("hidden");
-      document.getElementById("participantName").value = "";
-      document.getElementById("nameHint").textContent = "The survey will begin only after a valid name is entered.";
-      updateProgress();
-      updateDots();
-    }
-
-    function buildCSV() {
-      if (!state.answers.length) {
-        return "participantName,videoId,title,question,answerValue,answerLabel,recordedAt";
-      }
-
-      const headers = Object.keys(state.answers[0]);
-      const rows = state.answers.map((row) =>
-        headers.map((key) => `"${String(row[key]).replaceAll('"', '""')}"`).join(",")
-      );
-
-      return [headers.join(","), ...rows].join("\n");
-    }
-
-    function downloadCSV() {
-      const csv = buildCSV();
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "ad-video-responses.csv";
-      link.click();
-      URL.revokeObjectURL(url);
-    }
-
-    async function copyJSON() {
-      const payload = JSON.stringify(state.answers, null, 2);
-      try {
-        await navigator.clipboard.writeText(payload);
-        alert("JSON copied to clipboard.");
-      } catch (error) {
-        alert("Clipboard access failed. Open the console to copy the data.");
-        console.error(payload);
-      }
-    }
+    quizContent.style.display = 'block';
+    resultScreen.style.display = 'none';
 
     updateProgress();
-    updateDots();
-  </script>
+    loadVideo();
+  }
+
+  updateProgress();
+  loadVideo();
+</script>
+
 </body>
 </html>
