@@ -1,337 +1,550 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ad Recall Survey - Research Portal</title>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .font-display { font-family: 'Space Grotesk', sans-serif; }
-    @keyframes drift-slow-1 {
-      0%, 100% { transform: translate(0px, 0px) scale(1); }
-      50% { transform: translate(40px, -60px) scale(1.1); }
-    }
-    .animate-drift-1 { animation: drift-slow-1 25s ease-in-out infinite; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ad Recall Survey - Research Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Inter', sans-serif; }
+.font-display { font-family: 'Space Grotesk', sans-serif; }
+@keyframes drift-slow-1 {
+0%, 100% { transform: translate(0px, 0px) scale(1); }
+50% { transform: translate(40px, -60px) scale(1.1); }
+}
+.animate-drift-1 { animation: drift-slow-1 25s ease-in-out infinite; }
+</style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col relative overflow-x-hidden select-none">
+<!-- Background Ambient Patterns -->
+<div class="fixed inset-0 -z-10 overflow-hidden bg-slate-100">
+<div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-orange-100/40 blur-3xl animate-drift-1"></div>
+<div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px); background-size: 40px 40px;"></div>
+</div>
 
-  <!-- Background Ambient Patterns -->
-  <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-100">
-    <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-orange-100/40 blur-3xl animate-drift-1"></div>
-    <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px); background-size: 40px 40px;"></div>
+<!-- Header -->
+<header class="w-full h-16 flex items-center justify-between px-6 md:px-8 bg-orange-500 text-white font-semibold shadow-md relative z-30 shrink-0">
+<div class="flex items-center gap-3">
+<span class="text-base md:text-lg tracking-tight uppercase font-black">Ad Research Portal</span>
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+</div>
+<div class="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider">
+<span id="header-records-badge" class="bg-orange-600 px-2.5 py-1 rounded-md">Stored Records: 0</span>
+</div>
+</header>
+
+<!-- Main Content Stage -->
+<main class="flex-1 flex items-center justify-center p-4 md:p-8 relative z-20">
+
+<!-- STAGE 1: DEMOGRAPHICS (Original Sleek UI) -->
+<div id="stage-demographics" class="w-full flex justify-center">
+  <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
+    <div class="bg-orange-500 p-6 text-white text-center">
+      <h2 class="text-2xl font-bold font-display uppercase">Advertising survey</h2>
+      <p class="text-orange-100 text-sm mt-1">Please fill in details to begin</p>
+    </div>
+
+    <form id="demographics-form" onsubmit="submitDemographics(event)" class="p-6 md:p-8 space-y-6">
+      <div class="space-y-2">
+        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">1. Participant Full Name:</label>
+        <input type="text" id="input-name" required placeholder="Enter name..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 outline-none transition-all">
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="space-y-2">
+          <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">2. Participant Age:</label>
+          <select id="input-age" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
+            <option value="">Select Age...</option>
+            <script>for(let i=4;i<=18;i++) document.write(`<option value="${i}">${i} Years Old</option>`)</script>
+          </select>
+        </div>
+        <div class="space-y-2">
+          <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">3. Current Class Group:</label>
+          <input type="text" id="input-class" required placeholder="e.g. Grade 5" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+      </div>
+
+      <div class="space-y-2.5">
+        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">4. Gender:</label>
+        <input type="hidden" id="input-gender" value="">
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" onclick="selectGender('Boy', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Boy 👦</button>
+          <button type="button" onclick="selectGender('Girl', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Girl 👧</button>
+        </div>
+      </div>
+
+      <div class="space-y-2.5">
+        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">5. School Classification:</label>
+        <input type="hidden" id="input-school" value="">
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" onclick="selectSchool('Private', this)" class="school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm">Private</button>
+          <button type="button" onclick="selectSchool('Government', this)" class="school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm">Government</button>
+        </div>
+      </div>
+
+      <div class="space-y-2.5">
+        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">6. Sibling Count:</label>
+        <input type="hidden" id="input-siblings" value="">
+        <div class="grid grid-cols-5 gap-2">
+          <script>['0','1','2','3','4+'].forEach(s => document.write(`<button type="button" onclick="selectSiblings('${s}', this)" class="sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-50">${s}</button>`))</script>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">7. Daily Screen Time:</label>
+        <select id="input-screentime" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
+          <option value="">Select duration...</option>
+          <option value="Less than 1 hour">Under 1 Hour</option>
+          <option value="1-2 hours">1 - 2 Hours</option>
+          <option value="2-3 hours">2 - 3 Hours</option>
+          <option value="More than 3 hours">More than 3 Hours</option>
+        </select>
+      </div>
+
+      <!-- Consent Agreement Checkbox -->
+      <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+        <input type="checkbox" id="input-consent" required class="w-5 h-5 mt-0.5 accent-orange-500 rounded cursor-pointer focus:ring-orange-500">
+        <label for="input-consent" class="text-xs text-slate-500 font-semibold leading-relaxed cursor-pointer">
+          I voluntarily agree to participate in this survey and consent to the secure transmission of my responses for academic research purposes.
+        </label>
+      </div>
+
+      <button type="submit" class="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider shadow-md transition-all">Proceed to Videos</button>
+    </form>
   </div>
+</div>
 
-  <!-- Header -->
-  <header class="w-full h-16 flex items-center justify-between px-6 md:px-8 bg-orange-500 text-white font-semibold shadow-md relative z-30 shrink-0">
-    <div class="flex items-center gap-3">
-      <span class="text-base md:text-lg tracking-tight uppercase font-black">Ad Research Portal</span>
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<!-- STAGE 2: VIDEOS (Autoplay focus, zero control buttons) -->
+<div id="stage-videos" class="hidden w-full flex justify-center">
+  <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+    <div class="bg-orange-500 p-5 text-white text-center">
+      <span id="video-count-badge" class="bg-orange-700 text-white px-3 py-1 text-[10px] font-bold uppercase rounded-full">Ad 1 of 4</span>
+      <h2 id="video-title" class="text-lg font-bold font-display uppercase mt-2">Ad Loading...</h2>
     </div>
-    <div class="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider">
-      <span id="header-records-badge" class="bg-orange-600 px-2.5 py-1 rounded-md">Stored Records: 0</span>
+
+    <div class="p-6 md:p-8 space-y-6 flex flex-col items-center">
+      <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
+        <!-- Autoplay is executed directly upon showing. Fallback manual click is bound directly to the video tag -->
+        <video id="f-player" onended="videoPlayEnded()" onclick="this.play()" class="w-full h-full object-contain cursor-pointer" autoplay playsinline></video>
+      </div>
     </div>
-  </header>
+  </div>
+</div>
 
-  <!-- Main Content Stage -->
-  <main class="flex-1 flex items-center justify-center p-4 md:p-8 relative z-20">
-    
-    <!-- STAGE 1: DEMOGRAPHICS (Original Sleek UI) -->
-    <div id="stage-demographics" class="w-full flex justify-center">
-      <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
-        <div class="bg-orange-500 p-6 text-white text-center">
-          <h2 class="text-2xl font-bold font-display uppercase">Advertising survey</h2>
-          <p class="text-orange-100 text-sm mt-1">Please fill in details to begin</p>
-        </div>
+<!-- STAGE 3: QUESTIONNAIRE -->
+<div id="stage-questionnaire" class="hidden w-full flex justify-center">
+  <div class="w-full max-w-4xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
+    <div class="bg-slate-50 p-6 md:p-8 border-b border-slate-100">
+      <div class="flex justify-between items-center mb-2">
+        <span id="question-category-code" class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Category</span>
+        <span id="question-count-label" class="text-slate-400 text-sm font-medium">Question 1 of 22</span>
+      </div>
+      <h2 id="question-text" class="text-2xl md:text-3xl font-semibold text-slate-800 leading-tight">Question text?</h2>
+    </div>
 
-        <form id="demographics-form" onsubmit="submitDemographics(event)" class="p-6 md:p-8 space-y-6">
-          <div class="space-y-2">
-            <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">1. Participant Full Name:</label>
-            <input type="text" id="input-name" required placeholder="Enter name..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 outline-none transition-all">
-          </div>
+    <div class="p-8 md:p-12 flex-1">
+      <!-- 5-Point Likert Scale Container -->
+      <div id="likert-container" class="grid grid-cols-5 gap-3 sm:gap-6">
+        <script>
+          const labels = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"];
+          for(let i=1; i<=5; i++) {
+            document.write(`
+              <button onclick="selectRating(${i})" class="group flex flex-col items-center gap-3">
+                <div id="likert-box-${i}" class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-xl font-bold text-slate-300 transition-all">
+                  ${i}
+                </div>
+                <span class="text-[9px] font-bold uppercase text-slate-400 text-center leading-tight">${labels[i-1]}</span>
+              </button>
+            `);
+          }
+        </script>
+      </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="space-y-2">
-              <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">2. Participant Age:</label>
-              <select id="input-age" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
-                <option value="">Select Age...</option>
-                <script>for(let i=4;i<=18;i++) document.write(`<option value="${i}">${i} Years Old</option>`)</script>
-              </select>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">3. Current Class Group:</label>
-              <input type="text" id="input-class" required placeholder="e.g. Grade 5" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-orange-500">
-            </div>
-          </div>
-
-          <div class="space-y-2.5">
-            <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">4. Gender:</label>
-            <input type="hidden" id="input-gender" value="">
-            <div class="grid grid-cols-3 gap-3">
-              <button type="button" onclick="selectGender('Boy', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Boy 👦</button>
-              <button type="button" onclick="selectGender('Girl', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Girl 👧</button>
-              <button type="button" onclick="selectGender('Other', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Other 😊</button>
-            </div>
-          </div>
-
-          <div class="space-y-2.5">
-            <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">5. School Classification:</label>
-            <input type="hidden" id="input-school" value="">
-            <div class="grid grid-cols-2 gap-3">
-              <button type="button" onclick="selectSchool('Private', this)" class="school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm">Private</button>
-              <button type="button" onclick="selectSchool('Government', this)" class="school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm">Government</button>
-            </div>
-          </div>
-
-          <div class="space-y-2.5">
-            <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">6. Sibling Count:</label>
-            <input type="hidden" id="input-siblings" value="">
-            <div class="grid grid-cols-5 gap-2">
-              <script>['0','1','2','3','4+'].forEach(s => document.write(`<button type="button" onclick="selectSiblings('${s}', this)" class="sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-50">${s}</button>`))</script>
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">7. Daily Screen Time:</label>
-            <select id="input-screentime" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
-              <option value="">Select duration...</option>
-              <option value="Less than 1 hour">Under 1 Hour</option>
-              <option value="1-2 hours">1 - 2 Hours</option>
-              <option value="2-3 hours">2 - 3 Hours</option>
-              <option value="More than 3 hours">More than 3 Hours</option>
-            </select>
-          </div>
-
-          <button type="submit" class="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider shadow-md transition-all">Proceed to Videos</button>
-        </form>
+      <!-- Preferred Ad Select Grid -->
+      <div id="favorite-ad-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Filled programmatically with 4 video items -->
       </div>
     </div>
 
-    <!-- STAGE 2: VIDEOS (With Skip Option) -->
-    <div id="stage-videos" class="hidden w-full flex justify-center">
-      <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
-        <div class="bg-orange-500 p-5 text-white text-center">
-          <span id="video-count-badge" class="bg-orange-700 text-white px-3 py-1 text-[10px] font-bold uppercase rounded-full">Ad 1 of 4</span>
-          <h2 id="video-title" class="text-lg font-bold font-display uppercase mt-2">Ad Loading...</h2>
-        </div>
-
-        <div class="p-6 md:p-8 space-y-6 flex flex-col items-center">
-          <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
-            <video id="f-player" onended="videoPlayEnded()" class="w-full h-full object-contain"></video>
-            <div id="video-play-overlay" class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center cursor-pointer" onclick="startActivePlayback()">
-              <div class="w-16 h-16 bg-orange-500 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
-                <i data-lucide="play" class="fill-current ml-1"></i>
-              </div>
-              <p class="text-white mt-4 uppercase font-bold text-xs tracking-wider">Click to Play</p>
-            </div>
-          </div>
-
-          <div class="w-full flex justify-between items-center gap-4">
-             <button onclick="videoPlayEnded()" class="text-[10px] uppercase font-bold text-slate-400 hover:text-orange-500 transition-colors flex items-center gap-1">
-               <i data-lucide="fast-forward" class="w-3 h-3"></i> Skip Ad (Test Mode)
-             </button>
-             <button id="video-continue-btn" disabled onclick="advanceToNextVideo()" class="flex-1 opacity-50 bg-orange-500 text-white font-bold py-3 px-6 rounded-xl text-xs uppercase tracking-wider">Please complete viewing</button>
-          </div>
-        </div>
-      </div>
+    <div class="bg-slate-50 p-6 border-t border-slate-100 flex justify-between items-center">
+      <button id="ques-prev-btn" onclick="prevQuestion()" class="px-8 py-3 rounded-xl border border-slate-300 text-slate-500 font-bold hover:bg-slate-100 transition-colors">Previous</button>
+      <button id="ques-next-btn" onclick="nextQuestion()" class="px-12 py-3.5 rounded-xl bg-orange-500 text-white font-bold shadow-lg hover:bg-orange-600 transition-all uppercase text-xs">Next Question</button>
     </div>
+  </div>
+</div>
 
-    <!-- STAGE 3: QUESTIONNAIRE (Updated to 22 Questions) -->
-    <div id="stage-questionnaire" class="hidden w-full flex justify-center">
-      <div class="w-full max-w-4xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
-        <div class="bg-slate-50 p-6 md:p-8 border-b border-slate-100">
-          <div class="flex justify-between items-center mb-2">
-            <span id="question-category-code" class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Category</span>
-            <span id="question-count-label" class="text-slate-400 text-sm font-medium">Question 1 of 22</span>
-          </div>
-          <h2 id="question-text" class="text-2xl md:text-3xl font-semibold text-slate-800 leading-tight">Question text?</h2>
-        </div>
+<!-- STAGE 4: COMPLETED -->
+<div id="stage-completed" class="hidden text-center bg-white p-12 rounded-3xl shadow-xl max-w-sm w-full border border-slate-200">
+  <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="check" class="w-10 h-10"></i></div>
+  <h2 class="text-2xl font-bold font-display uppercase text-slate-800">Survey Complete!</h2>
+  <p class="text-slate-500 text-sm mt-2 mb-8">All responses have been recorded securely.</p>
+  <button onclick="location.reload()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs">New Participant</button>
+</div>
+</main>
 
-        <div class="p-8 md:p-12 flex-1">
-          <div class="grid grid-cols-5 gap-3 sm:gap-6">
-            <script>
-              const labels = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"];
-              for(let i=1; i<=5; i++) {
-                document.write(`
-                  <button onclick="selectRating(${i})" class="group flex flex-col items-center gap-3">
-                    <div id="likert-box-${i}" class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-xl font-bold text-slate-300 transition-all">
-                      ${i}
-                    </div>
-                    <span class="text-[9px] font-bold uppercase text-slate-400 text-center leading-tight">${labels[i-1]}</span>
-                  </button>
-                `);
-              }
-            </script>
-          </div>
-        </div>
+<!-- Page Footer -->
+<footer class="w-full h-12 flex items-center justify-center bg-white border-t border-slate-200 text-slate-500 text-[10px] md:text-xs font-semibold tracking-wide relative z-30 shrink-0">
+  <span>Author: Dr. Subhojit Banerjee, Anjali Kushwaha & Vaishali Sharma - Gautam Buddha University</span>
+</footer>
 
-        <div class="bg-slate-50 p-6 border-t border-slate-100 flex justify-between items-center">
-          <button id="ques-prev-btn" onclick="prevQuestion()" class="px-8 py-3 rounded-xl border border-slate-300 text-slate-500 font-bold hover:bg-slate-100 transition-colors">Previous</button>
-          <button id="ques-next-btn" onclick="nextQuestion()" class="px-12 py-3.5 rounded-xl bg-orange-500 text-white font-bold shadow-lg hover:bg-orange-600 transition-all uppercase text-xs">Next Question</button>
-        </div>
-      </div>
-    </div>
+<script>
+// Remaining general questions list (AR1 to AR5 removed as they are asked after each video)
+const SURVEY_QUESTIONS = [
+{ id: "ER1", cat: "Emotional Reaction", text: "The advertisement made me happy." },
+{ id: "ER2", cat: "Emotional Reaction", text: "The advertisement was exciting." },
+{ id: "ER3", cat: "Emotional Reaction", text: "I felt emotionally connected to the advertisement." },
+{ id: "ER4", cat: "Emotional Reaction", text: "The advertisement made the product look fun." },
+{ id: "PD1", cat: "Purchase Intention", text: "I want this product." },
+{ id: "PD2", cat: "Purchase Intention", text: "I would like my parents to buy this product for me." },
+{ id: "PD3", cat: "Purchase Intention", text: "I may ask my parents to buy this product." },
+{ id: "PD4", cat: "Purchase Intention", text: "I think this product is better than other products." },
+{ id: "PD5", cat: "Purchase Intention", text: "I would feel happy if I got this product." },
+{ id: "PP1", cat: "Child Influence Attempts", text: "I will ask my parents to buy this product many times." },
+{ id: "PP2", cat: "Child Influence Attempts", text: "I will remind my parents again if they refuse." },
+{ id: "PP3", cat: "Child Influence Attempts", text: "I may feel upset if my parents do not buy this product." },
+{ id: "PP4", cat: "Child Influence Attempts", text: "I may compare this product with what my friends have." },
+{ id: "PP5", cat: "Child Influence Attempts", text: "I will try hard to convince my parents to buy this product." },
+{ id: "PI1", cat: "Peer Influence", text: "My friends influence what products I like." },
+{ id: "PI2", cat: "Peer Influence", text: "I want products that my friends have." },
+{ id: "PI3", cat: "Peer Influence", text: "I feel left out if I do not have products like my friends." }
+];
 
-    <!-- STAGE 4: COMPLETED -->
-    <div id="stage-completed" class="hidden text-center bg-white p-12 rounded-3xl shadow-xl max-w-sm w-full border border-slate-200">
-      <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="check" class="w-10 h-10"></i></div>
-      <h2 class="text-2xl font-bold font-display uppercase text-slate-800">Survey Complete!</h2>
-      <p class="text-slate-500 text-sm mt-2 mb-8">All responses have been recorded securely.</p>
-      <button onclick="location.reload()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs">New Participant</button>
-    </div>
+// Ad-specific questions asked after each video
+const AD_SPEC_QUESTIONS = [
+"I watched the advertisement carefully.",
+"I can remember all the products shown in the advertisement.",
+"The advertisement was most interesting.",
+"I liked the way the advertisement looked.",
+"I would like to watch the advertisement again."
+];
 
-  </main>
+// Target videos list
+const VIDEOS = [
+{ title: "Big Babool Crow", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/Big%20babool%20crow%20ad.mp4" },
+{ title: "Frooti Mango", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Choos%20The%20Mango%2C%20Choose%20%23TheFrootiLife.%20720P.mp4" },
+{ title: "Kelloggs Chocos", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Kellogg%E2%80%99s%20Multigrain%20Chocos%20_%20Multigrain%20Energy%2C%20More%20Chocolatey%20_%20Hindi%2030%20sec%201080P.mp4" },
+{ title: "Kissan Jam", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Kissan%20Jam%20(Hindi)%20720P.mp4" }
+];
 
-  <script>
-    const SURVEY_QUESTIONS = [
-      { id: "AR1", cat: "Attitude toward Advertisement", text: "I watched all the advertisement carefully." },
-      { id: "AR2", cat: "Attitude toward Advertisement", text: "I can remember all the products shown in the advertisement." },
-      { id: "AR3", cat: "Attitude toward Advertisement", text: "The advertisement was most interesting." },
-      { id: "AR4", cat: "Attitude toward Advertisement", text: "I liked the way the advertisement looked." },
-      { id: "AR5", cat: "Attitude toward Advertisement", text: "I would like to watch the advertisement again." },
-      { id: "ER1", cat: "Emotional Reaction", text: "The advertisement made me happy." },
-      { id: "ER2", cat: "Emotional Reaction", text: "The advertisement was exciting." },
-      { id: "ER3", cat: "Emotional Reaction", text: "I felt emotionally connected to the advertisement." },
-      { id: "ER4", cat: "Emotional Reaction", text: "The advertisement made the product look fun." },
-      { id: "PD1", cat: "Purchase Intention", text: "I want this product." },
-      { id: "PD2", cat: "Purchase Intention", text: "I would like my parents to buy this product for me." },
-      { id: "PD3", cat: "Purchase Intention", text: "I may ask my parents to buy this product." },
-      { id: "PD4", cat: "Purchase Intention", text: "I think this product is better than other products." },
-      { id: "PD5", cat: "Purchase Intention", text: "I would feel happy if I got this product." },
-      { id: "PP1", cat: "Child Influence Attempts", text: "I will ask my parents to buy this product many times." },
-      { id: "PP2", cat: "Child Influence Attempts", text: "I will remind my parents again if they refuse." },
-      { id: "PP3", cat: "Child Influence Attempts", text: "I may feel upset if my parents do not buy this product." },
-      { id: "PP4", cat: "Child Influence Attempts", text: "I may compare this product with what my friends have." },
-      { id: "PP5", cat: "Child Influence Attempts", text: "I will try hard to convince my parents to buy this product." },
-      { id: "PI1", cat: "Peer Influence", text: "My friends influence what products I like." },
-      { id: "PI2", cat: "Peer Influence", text: "I want products that my friends have." },
-      { id: "PI3", cat: "Peer Influence", text: "I feel left out if I do not have products like my friends." }
-    ];
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQUHc5ugq1jlCRVqEyU6YRXgSDwCXeCCaMBA7yXPznWbs1MBycA4RvzcEPP-Gx2ff1xw/exec';
 
-    const VIDEOS = [
-      { title: "Big Babool Crow", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/Big%20babool%20crow%20ad.mp4" },
-      { title: "Boost Play Bigger", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Boost%20%23PlayABiggerGame%202018%20720P.mp4" },
-      { title: "Kelloggs Chocos", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Kellogg%E2%80%99s%20Multigrain%20Chocos%20_%20Multigrain%20Energy%2C%20More%20Chocolatey%20_%20Hindi%2030%20sec%201080P.mp4" },
-      { title: "Kissan Jam", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Kissan%20Jam%20(Hindi)%20720P.mp4" }
-    ];
+let demographicsData = {};
+let videoIndex = 0;
+let userAnswers = {};
+let isSubmitting = false;
 
-    let demographicsData = {};
-    let videoIndex = 0;
-    let questionIndex = 0;
-    let userAnswers = {};
+let videoFeedbackAnswers = {
+  0: {}, 
+  1: {}, 
+  2: {}, 
+  3: {}  
+};
 
-    window.onload = () => {
-      lucide.createIcons();
-      const logs = JSON.parse(localStorage.getItem('survey_logs') || "[]");
-      document.getElementById('header-records-badge').innerText = `Stored Records: ${logs.length}`;
-    };
+let flowState = "demographics"; 
+let videoQuestIndex = 0;       
+let questionIndex = 0;         
+let preferredAd = "";          
 
-    function selectGender(v, b) {
-      demographicsData.gender = v;
-      document.querySelectorAll('.gender-btn').forEach(btn => btn.className = "gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600");
-      b.className = "gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-800 text-white shadow-md";
-    }
+window.onload = () => {
+lucide.createIcons();
+updateRecordsCount();
+};
 
-    function selectSchool(v, b) {
-      demographicsData.school = v;
-      document.querySelectorAll('.school-btn').forEach(btn => btn.className = "school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm");
-      b.className = "school-btn border p-3 rounded-xl text-center font-bold bg-orange-500 text-white shadow-md";
-    }
+function updateRecordsCount() {
+const logs = JSON.parse(localStorage.getItem('survey_logs') || "[]");
+document.getElementById('header-records-badge').innerText = `Stored Records: ${logs.length}`;
+}
 
-    function selectSiblings(v, b) {
-      demographicsData.siblings = v;
-      document.querySelectorAll('.sibling-btn').forEach(btn => btn.className = "sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-50");
-      b.className = "sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-white shadow-sm";
-    }
+function selectGender(v, b) {
+demographicsData.gender = v;
+document.querySelectorAll('.gender-btn').forEach(btn => btn.className = "gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600");
+b.className = "gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-800 text-white shadow-md";
+}
 
-    function submitDemographics(e) {
-      e.preventDefault();
-      demographicsData.name = document.getElementById('input-name').value;
-      demographicsData.age = document.getElementById('input-age').value;
-      demographicsData.class = document.getElementById('input-class').value;
-      demographicsData.screenTime = document.getElementById('input-screentime').value;
+function selectSchool(v, b) {
+demographicsData.school = v;
+document.querySelectorAll('.school-btn').forEach(btn => btn.className = "school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm");
+b.className = "school-btn border p-3 rounded-xl text-center font-bold bg-orange-500 text-white shadow-md";
+}
 
-      if(!demographicsData.name || !demographicsData.gender || !demographicsData.school || !demographicsData.siblings) {
-        return alert("Please complete all demographic fields.");
-      }
+function selectSiblings(v, b) {
+demographicsData.siblings = v;
+document.querySelectorAll('.sibling-btn').forEach(btn => btn.className = "sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-50");
+b.className = "sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-white shadow-sm";
+}
+
+function submitDemographics(e) {
+e.preventDefault();
+demographicsData.name = document.getElementById('input-name').value;
+demographicsData.age = document.getElementById('input-age').value;
+demographicsData.class = document.getElementById('input-class').value;
+demographicsData.screenTime = document.getElementById('input-screentime').value;
+
+if(!demographicsData.name || !demographicsData.gender || !demographicsData.school || !demographicsData.siblings) {
+return alert("Please complete all demographic fields.");
+}
+flowState = "video_play";
+showStage('videos');
+loadActiveVideo();
+}
+
+function loadActiveVideo() {
+const v = VIDEOS[videoIndex];
+const ply = document.getElementById('f-player');
+document.getElementById('video-title').innerText = v.title;
+document.getElementById('video-count-badge').innerText = `Ad ${videoIndex+1} of 4`;
+ply.src = v.url;
+ply.load();
+
+// Trigger browser native media play (enabled via demographics submit interaction)
+const playPromise = ply.play();
+if (playPromise !== undefined) {
+  playPromise.catch(error => {
+    console.log("Auto-play gesture rule block handled: click video manually to play", error);
+  });
+}
+}
+
+// Automatically transition to the feedback questionnaire the instant the video ends
+function videoPlayEnded() {
+flowState = "video_questions";
+videoQuestIndex = 0;
+showStage('questionnaire');
+loadQuestion();
+}
+
+function loadQuestion() {
+const likertContainer = document.getElementById('likert-container');
+const favContainer = document.getElementById('favorite-ad-container');
+const prevBtn = document.getElementById('ques-prev-btn');
+const nextBtn = document.getElementById('ques-next-btn');
+
+if(flowState === "video_questions") {
+  likertContainer.classList.remove('hidden');
+  favContainer.classList.add('hidden');
+  prevBtn.classList.add('invisible'); 
+  nextBtn.innerText = "Next Question";
+
+  const adName = VIDEOS[videoIndex].title;
+  document.getElementById('question-category-code').innerText = `Ad Feedback: ${adName}`;
+  document.getElementById('question-text').innerText = `"${AD_SPEC_QUESTIONS[videoQuestIndex]}"`;
+  document.getElementById('question-count-label').innerText = `Question ${videoQuestIndex + 1} of 5`;
+  
+  updateLikertUI(videoFeedbackAnswers[videoIndex][videoQuestIndex]);
+
+} else if (flowState === "favorite_ad") {
+  likertContainer.classList.add('hidden');
+  favContainer.classList.remove('hidden');
+  prevBtn.classList.add('invisible');
+  nextBtn.innerText = "Proceed to Final Section";
+
+  document.getElementById('question-category-code').innerText = "Ad Preference";
+  document.getElementById('question-text').innerText = "Which advertisement did you like the most?";
+  document.getElementById('question-count-label').innerText = "Overall Choice";
+  
+  renderFavoriteAdSelection();
+
+} else if (flowState === "general_questions") {
+  likertContainer.classList.remove('hidden');
+  favContainer.classList.add('hidden');
+  
+  if(questionIndex > 0) {
+    prevBtn.classList.remove('invisible');
+  } else {
+    prevBtn.classList.add('invisible');
+  }
+  
+  nextBtn.innerText = (questionIndex === SURVEY_QUESTIONS.length - 1) ? "Submit Survey" : "Next Question";
+
+  const q = SURVEY_QUESTIONS[questionIndex];
+  document.getElementById('question-category-code').innerText = q.cat;
+  document.getElementById('question-text').innerText = `"${q.text}"`;
+  document.getElementById('question-count-label').innerText = `Question ${questionIndex + 1} of ${SURVEY_QUESTIONS.length}`;
+  
+  updateLikertUI(userAnswers[q.id]);
+}
+}
+
+function selectRating(v) {
+if(flowState === "video_questions") {
+  videoFeedbackAnswers[videoIndex][videoQuestIndex] = v;
+  updateLikertUI(v);
+  setTimeout(() => { advanceFlow(); }, 250);
+} else if (flowState === "general_questions") {
+  userAnswers[SURVEY_QUESTIONS[questionIndex].id] = v;
+  updateLikertUI(v);
+  setTimeout(() => { advanceFlow(); }, 250);
+}
+}
+
+function selectFavoriteAd(title) {
+preferredAd = title;
+renderFavoriteAdSelection();
+}
+
+function renderFavoriteAdSelection() {
+const container = document.getElementById('favorite-ad-container');
+container.innerHTML = '';
+VIDEOS.forEach((v, idx) => {
+  const isSelected = (preferredAd === v.title);
+  const activeClass = isSelected ? 'border-orange-500 bg-orange-50 text-orange-600 ring-2 ring-orange-400' : 'border-slate-200 text-slate-700 hover:border-orange-300';
+  container.innerHTML += `
+    <button type="button" onclick="selectFavoriteAd('${v.title}')" class="fav-ad-option p-4 md:p-6 rounded-2xl border-2 text-left font-bold transition-all flex items-center gap-4 ${activeClass}">
+      <span class="w-10 h-10 rounded-full flex items-center justify-center ${isSelected ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600'} text-base font-extrabold">${idx+1}</span>
+      <span class="text-sm md:text-base tracking-tight uppercase">${v.title}</span>
+    </button>
+  `;
+});
+}
+
+function updateLikertUI(v) {
+for(let i=1; i<=5; i++) {
+  const b = document.getElementById(`likert-box-${i}`);
+  if(b) {
+    b.className = (i === v) ?
+    "w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-4 border-orange-500 bg-orange-50 flex items-center justify-center text-xl font-bold text-orange-600 scale-110 shadow-lg" :
+    "w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-xl font-bold text-slate-300";
+  }
+}
+}
+
+// Function to handle moving forward
+function nextQuestion() {
+if (flowState === "video_questions") {
+  if(!videoFeedbackAnswers[videoIndex][videoQuestIndex]) return alert("Please select a rating.");
+  advanceFlow();
+} else if (flowState === "favorite_ad") {
+  if(!preferredAd) return alert("Please select your favorite advertisement to proceed.");
+  flowState = "general_questions";
+  questionIndex = 0;
+  loadQuestion();
+} else if (flowState === "general_questions") {
+  if(!userAnswers[SURVEY_QUESTIONS[questionIndex].id]) return alert("Please select a rating.");
+  advanceFlow();
+}
+}
+
+function prevQuestion() { 
+if(flowState === "general_questions" && questionIndex > 0) { 
+  questionIndex--; 
+  loadQuestion(); 
+} 
+}
+
+function advanceFlow() {
+if(flowState === "video_questions") {
+  if(videoQuestIndex < 4) {
+    videoQuestIndex++;
+    loadQuestion();
+  } else {
+    if(videoIndex < 3) {
+      videoIndex++;
+      flowState = "video_play";
       showStage('videos');
       loadActiveVideo();
+    } else {
+      flowState = "favorite_ad";
+      showStage('questionnaire');
+      loadQuestion();
     }
+  }
+} else if(flowState === "general_questions") {
+  if(questionIndex < SURVEY_QUESTIONS.length - 1) {
+    questionIndex++;
+    loadQuestion();
+  } else {
+    finalize();
+  }
+}
+}
 
-    function loadActiveVideo() {
-      const v = VIDEOS[videoIndex];
-      const ply = document.getElementById('f-player');
-      document.getElementById('video-title').innerText = v.title;
-      document.getElementById('video-count-badge').innerText = `Ad ${videoIndex+1} of 4`;
-      ply.src = v.url;
-      ply.load();
-      document.getElementById('video-play-overlay').classList.remove('hidden');
-      document.getElementById('video-continue-btn').disabled = true;
-      document.getElementById('video-continue-btn').classList.add('opacity-50');
-      document.getElementById('video-continue-btn').innerText = "Please complete viewing";
-    }
+async function finalize() {
+if (isSubmitting) return; 
+isSubmitting = true;
 
-    function startActivePlayback() { document.getElementById('f-player').play(); document.getElementById('video-play-overlay').classList.add('hidden'); }
+const payload = {
+  name: demographicsData.name || "",
+  age: demographicsData.age || "",
+  class: demographicsData.class || "",
+  gender: demographicsData.gender || "",
+  school: demographicsData.school || "",
+  siblings: demographicsData.siblings || "",
+  screenTime: demographicsData.screenTime || "",
 
-    function videoPlayEnded() {
-      const btn = document.getElementById('video-continue-btn');
-      btn.disabled = false;
-      btn.classList.remove('opacity-50');
-      btn.innerText = (videoIndex < 3) ? "Next Video" : "Proceed to Questions";
-    }
+  ad1_q1: videoFeedbackAnswers[0][0] || "",
+  ad1_q2: videoFeedbackAnswers[0][1] || "",
+  ad1_q3: videoFeedbackAnswers[0][2] || "",
+  ad1_q4: videoFeedbackAnswers[0][3] || "",
+  ad1_q5: videoFeedbackAnswers[0][4] || "",
 
-    function advanceToNextVideo() {
-      if(videoIndex < 3) { videoIndex++; loadActiveVideo(); }
-      else { showStage('questionnaire'); loadQuestion(); }
-    }
+  ad2_q1: videoFeedbackAnswers[1][0] || "",
+  ad2_q2: videoFeedbackAnswers[1][1] || "",
+  ad2_q3: videoFeedbackAnswers[1][2] || "",
+  ad2_q4: videoFeedbackAnswers[1][3] || "",
+  ad2_q5: videoFeedbackAnswers[1][4] || "",
 
-    function loadQuestion() {
-      const q = SURVEY_QUESTIONS[questionIndex];
-      document.getElementById('question-category-code').innerText = q.cat;
-      document.getElementById('question-text').innerText = `"${q.text}"`;
-      document.getElementById('question-count-label').innerText = `Question ${questionIndex + 1} of 22`;
-      updateLikertUI(userAnswers[q.id]);
-    }
+  ad3_q1: videoFeedbackAnswers[2][0] || "",
+  ad3_q2: videoFeedbackAnswers[2][1] || "",
+  ad3_q3: videoFeedbackAnswers[2][2] || "",
+  ad3_q4: videoFeedbackAnswers[2][3] || "",
+  ad3_q5: videoFeedbackAnswers[2][4] || "",
 
-    function selectRating(v) {
-      userAnswers[SURVEY_QUESTIONS[questionIndex].id] = v;
-      updateLikertUI(v);
-      setTimeout(() => { if(questionIndex < 21) { questionIndex++; loadQuestion(); } }, 250);
-    }
+  ad4_q1: videoFeedbackAnswers[3][0] || "",
+  ad4_q2: videoFeedbackAnswers[3][1] || "",
+  ad4_q3: videoFeedbackAnswers[3][2] || "",
+  ad4_q4: videoFeedbackAnswers[3][3] || "",
+  ad4_q5: videoFeedbackAnswers[3][4] || "",
 
-    function updateLikertUI(v) {
-      for(let i=1; i<=5; i++) {
-        const b = document.getElementById(`likert-box-${i}`);
-        b.className = (i === v) ? 
-          "w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-4 border-orange-500 bg-orange-50 flex items-center justify-center text-xl font-bold text-orange-600 scale-110 shadow-lg" : 
-          "w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-xl font-bold text-slate-300";
-      }
-    }
+  favorite_ad: preferredAd || "",
 
-    function nextQuestion() {
-      if(!userAnswers[SURVEY_QUESTIONS[questionIndex].id]) return alert("Please select an option.");
-      if(questionIndex < 21) { questionIndex++; loadQuestion(); }
-      else { finalize(); }
-    }
+  ER1: userAnswers["ER1"] || "",
+  ER2: userAnswers["ER2"] || "",
+  ER3: userAnswers["ER3"] || "",
+  ER4: userAnswers["ER4"] || "",
+  PD1: userAnswers["PD1"] || "",
+  PD2: userAnswers["PD2"] || "",
+  PD3: userAnswers["PD3"] || "",
+  PD4: userAnswers["PD4"] || "",
+  PD5: userAnswers["PD5"] || "",
+  PP1: userAnswers["PP1"] || "",
+  PP2: userAnswers["PP2"] || "",
+  PP3: userAnswers["PP3"] || "",
+  PP4: userAnswers["PP4"] || "",
+  PP5: userAnswers["PP5"] || "",
+  PI1: userAnswers["PI1"] || "",
+  PI2: userAnswers["PI2"] || "",
+  PI3: userAnswers["PI3"] || "",
 
-    function prevQuestion() { if(questionIndex > 0) { questionIndex--; loadQuestion(); } }
+  submittedAt: new Date().toISOString()
+};
 
-    function finalize() {
-      const logs = JSON.parse(localStorage.getItem('survey_logs') || "[]");
-      logs.push({ ...demographicsData, ...userAnswers, timestamp: new Date().toLocaleString() });
-      localStorage.setItem('survey_logs', JSON.stringify(logs));
-      showStage('completed');
-    }
+const logs = JSON.parse(localStorage.getItem('survey_logs') || "[]");
+logs.push(payload);
+localStorage.setItem('survey_logs', JSON.stringify(logs));
+updateRecordsCount();
 
-    function showStage(id) {
-      ['stage-demographics', 'stage-videos', 'stage-questionnaire', 'stage-completed'].forEach(s => document.getElementById(s).classList.add('hidden'));
-      document.getElementById('stage-' + id).classList.remove('hidden');
-    }
-  </script>
+try {
+  await fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+} catch(error) {
+  console.log("Transmission error:", error);
+}
+
+showStage('completed');
+}
+
+function showStage(id) {
+['stage-demographics', 'stage-videos', 'stage-questionnaire', 'stage-completed'].forEach(s => document.getElementById(s).classList.add('hidden'));
+document.getElementById('stage-' + id).classList.remove('hidden');
+}
+</script>
 </body>
 </html>
