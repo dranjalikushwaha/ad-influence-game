@@ -107,7 +107,7 @@ body { font-family: 'Inter', sans-serif; }
       <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
         <input type="checkbox" id="input-consent" required class="w-5 h-5 mt-0.5 accent-orange-500 rounded cursor-pointer focus:ring-orange-500">
         <label for="input-consent" class="text-xs text-slate-500 font-semibold leading-relaxed cursor-pointer">
-          I voluntarily agree to participate in this survey and consent to the secure transmission of my responses for academic research purposes.
+          As a parent or legal guardian, I hereby provide consent for my child to participate in this survey and agree to the secure transmission of their responses for academic research purposes.
         </label>
       </div>
 
@@ -194,7 +194,6 @@ body { font-family: 'Inter', sans-serif; }
 const SURVEY_QUESTIONS = [
 { id: "ER1", cat: "Emotional Reaction", text: "The advertisement made me happy." },
 { id: "ER2", cat: "Emotional Reaction", text: "The advertisement was exciting." },
-{ id: "ER3", cat: "Emotional Reaction", text: "I felt emotionally connected to the advertisement." },
 { id: "ER4", cat: "Emotional Reaction", text: "The advertisement made the product look fun." },
 { id: "PD1", cat: "Purchase Intention", text: "I want this product." },
 { id: "PD2", cat: "Purchase Intention", text: "I would like my parents to buy this product for me." },
@@ -214,7 +213,7 @@ const SURVEY_QUESTIONS = [
 // Ad-specific questions asked after each video
 const AD_SPEC_QUESTIONS = [
 "I watched the advertisement carefully.",
-"I can remember all the products shown in the advertisement.",
+"I remember the product shown in the advertisement.",
 "The advertisement was most interesting.",
 "I liked the way the advertisement looked.",
 "I would like to watch the advertisement again."
@@ -222,7 +221,7 @@ const AD_SPEC_QUESTIONS = [
 
 // Target videos list
 const VIDEOS = [
-{ title: "Big Babool Crow", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/Big%20babool%20crow%20ad.mp4" },
+{ title: "Doritos Sling Baby", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20SLING%20BABY%20_%20Doritos%20Commercial%20_%20%23superbowl%20%23commercials%20480P.mp4" },
 { title: "Frooti Mango", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Choos%20The%20Mango%2C%20Choose%20%23TheFrootiLife.%20720P.mp4" },
 { title: "Kelloggs Chocos", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Kellogg%E2%80%99s%20Multigrain%20Chocos%20_%20Multigrain%20Energy%2C%20More%20Chocolatey%20_%20Hindi%2030%20sec%201080P.mp4" },
 { title: "Kissan Jam", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Kissan%20Jam%20(Hindi)%20720P.mp4" }
