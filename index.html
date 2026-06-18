@@ -25,67 +25,76 @@ body { font-family: 'Inter', sans-serif; }
 </div>
 
 <!-- Header -->
-<header class="w-full h-16 flex items-center justify-between px-6 md:px-8 bg-orange-500 text-white font-semibold shadow-md relative z-30 shrink-0">
-<div class="flex items-center gap-3">
-<span class="text-base md:text-lg tracking-tight uppercase font-black">Ad Research Portal</span>
+<header class="w-full h-16 flex items-center justify-between px-4 md:px-8 bg-orange-500 text-white font-semibold shadow-md relative z-30 shrink-0">
+<div class="flex items-center gap-2 md:gap-3">
+<span class="text-sm md:text-lg tracking-tight uppercase font-black">Ad Research Portal</span>
 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
 </div>
-<div class="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider">
-<span id="header-records-badge" class="bg-orange-600 px-2.5 py-1 rounded-md">Stored Records: 0</span>
+<div class="flex items-center gap-4 text-[10px] md:text-xs font-semibold uppercase tracking-wider">
+<span id="header-records-badge" class="bg-orange-600 px-2.5 py-0.5 md:py-1 rounded-md">Stored Records: 0</span>
 </div>
 </header>
 
 <!-- Main Content Stage -->
-<main class="flex-1 flex items-center justify-center p-4 md:p-8 relative z-20">
+<main class="flex-1 flex items-center justify-center p-3 md:p-8 relative z-20">
 
-<!-- STAGE 1: DEMOGRAPHICS (Original Sleek UI) -->
+<!-- STAGE 1: DEMOGRAPHICS WITH LANGUAGE SELECTOR -->
 <div id="stage-demographics" class="w-full flex justify-center">
   <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
+    
+    <!-- Top Bar Language Switcher -->
+    <div class="flex justify-between items-center px-6 py-3 border-b border-slate-100 bg-slate-55">
+      <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Select Language / भाषा चुनें:</span>
+      <div class="inline-flex rounded-lg p-1 bg-slate-200/70">
+        <button type="button" id="lang-btn-en" onclick="setLanguage('en')" class="px-3 py-1 text-xs font-extrabold uppercase rounded-md transition-all bg-white text-orange-600 shadow-sm">English</button>
+        <button type="button" id="lang-btn-hi" onclick="setLanguage('hi')" class="px-3 py-1 text-xs font-extrabold uppercase rounded-md transition-all text-slate-550 hover:text-slate-700">हिंदी</button>
+      </div>
+    </div>
+
     <div class="bg-orange-500 p-6 text-white text-center">
-      <h2 class="text-2xl font-bold font-display uppercase">Advertising survey</h2>
-      <p class="text-orange-100 text-sm mt-1">Please fill in details to begin</p>
+      <h2 id="form-title" class="text-2xl font-bold font-display uppercase">Advertising survey</h2>
+      <p id="form-subtitle" class="text-orange-100 text-sm mt-1">Please fill in details to begin</p>
     </div>
 
     <form id="demographics-form" onsubmit="submitDemographics(event)" class="p-6 md:p-8 space-y-6">
       <div class="space-y-2">
-        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">1. Participant Full Name:</label>
+        <label id="label-name" class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">1. Participant Full Name:</label>
         <input type="text" id="input-name" required placeholder="Enter name..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-orange-500 outline-none transition-all">
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="space-y-2">
-          <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">2. Participant Age:</label>
+          <label id="label-age" class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">2. Participant Age:</label>
           <select id="input-age" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
-            <option value="">Select Age...</option>
-            <script>for(let i=4;i<=18;i++) document.write(`<option value="${i}">${i} Years Old</option>`)</script>
+            <option id="age-placeholder" value="">Select Age...</option>
           </select>
         </div>
         <div class="space-y-2">
-          <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">3. Current Class Group:</label>
+          <label id="label-class" class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">3. Current Class Group:</label>
           <input type="text" id="input-class" required placeholder="e.g. Grade 5" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-orange-500">
         </div>
       </div>
 
       <div class="space-y-2.5">
-        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">4. Gender:</label>
+        <label id="label-gender" class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">4. Gender:</label>
         <input type="hidden" id="input-gender" value="">
         <div class="grid grid-cols-2 gap-3">
-          <button type="button" onclick="selectGender('Boy', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Boy 👦</button>
-          <button type="button" onclick="selectGender('Girl', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Girl 👧</button>
+          <button type="button" id="btn-gender-boy" onclick="selectGender('Boy', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Boy 👦</button>
+          <button type="button" id="btn-gender-girl" onclick="selectGender('Girl', this)" class="gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all">Girl 👧</button>
         </div>
       </div>
 
       <div class="space-y-2.5">
-        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">5. School Classification:</label>
+        <label id="label-school" class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">5. School Classification:</label>
         <input type="hidden" id="input-school" value="">
         <div class="grid grid-cols-2 gap-3">
-          <button type="button" onclick="selectSchool('Private', this)" class="school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm">Private</button>
-          <button type="button" onclick="selectSchool('Government', this)" class="school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm">Government</button>
+          <button type="button" id="btn-school-private" onclick="selectSchool('Private', this)" class="school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm">Private</button>
+          <button type="button" id="btn-school-govt" onclick="selectSchool('Government', this)" class="school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm">Government</button>
         </div>
       </div>
 
       <div class="space-y-2.5">
-        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">6. Sibling Count:</label>
+        <label id="label-siblings" class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">6. Sibling Count:</label>
         <input type="hidden" id="input-siblings" value="">
         <div class="grid grid-cols-5 gap-2">
           <script>['0','1','2','3','4+'].forEach(s => document.write(`<button type="button" onclick="selectSiblings('${s}', this)" class="sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-50">${s}</button>`))</script>
@@ -93,69 +102,64 @@ body { font-family: 'Inter', sans-serif; }
       </div>
 
       <div class="space-y-2">
-        <label class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">7. Daily Screen Time:</label>
+        <label id="label-screentime" class="block text-xs uppercase font-extrabold text-slate-500 tracking-wider">7. Daily Screen Time:</label>
         <select id="input-screentime" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm">
-          <option value="">Select duration...</option>
-          <option value="Less than 1 hour">Under 1 Hour</option>
-          <option value="1-2 hours">1 - 2 Hours</option>
-          <option value="2-3 hours">2 - 3 Hours</option>
-          <option value="More than 3 hours">More than 3 Hours</option>
+          <option id="screentime-placeholder" value="">Select duration...</option>
         </select>
       </div>
 
       <!-- Consent Agreement Checkbox -->
       <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
         <input type="checkbox" id="input-consent" required class="w-5 h-5 mt-0.5 accent-orange-500 rounded cursor-pointer focus:ring-orange-500">
-        <label for="input-consent" class="text-xs text-slate-500 font-semibold leading-relaxed cursor-pointer">
+        <label id="consent-text-label" for="input-consent" class="text-xs text-slate-500 font-semibold leading-relaxed cursor-pointer">
           As a parent or legal guardian, I hereby provide consent for my child to participate in this survey and agree to the secure transmission of their responses for academic research purposes.
         </label>
       </div>
 
-      <button type="submit" class="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider shadow-md transition-all">Proceed to Videos</button>
+      <button type="submit" id="btn-proceed-submit" class="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-xl text-xs uppercase tracking-wider shadow-md transition-all">Proceed to Videos</button>
     </form>
   </div>
 </div>
 
-<!-- STAGE 2: VIDEOS (Autoplay focus, zero control buttons) -->
+<!-- STAGE 2: VIDEOS (Fluid Responsive Player Container) -->
 <div id="stage-videos" class="hidden w-full flex justify-center">
   <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
     <div class="bg-orange-500 p-5 text-white text-center">
       <span id="video-count-badge" class="bg-orange-700 text-white px-3 py-1 text-[10px] font-bold uppercase rounded-full">Ad 1 of 4</span>
-      <h2 id="video-title" class="text-lg font-bold font-display uppercase mt-2">Ad Loading...</h2>
+      <h2 id="video-title" class="text-base md:text-lg font-bold font-display uppercase mt-2">Ad Loading...</h2>
     </div>
 
-    <div class="p-6 md:p-8 space-y-6 flex flex-col items-center">
+    <div class="p-4 sm:p-6 md:p-8 space-y-4 flex flex-col items-center">
       <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
-        <!-- Autoplay is executed directly upon showing. Fallback manual click is bound directly to the video tag -->
         <video id="f-player" onended="videoPlayEnded()" onclick="this.play()" class="w-full h-full object-contain cursor-pointer" autoplay playsinline></video>
       </div>
+      <p id="tap-message-text" class="text-[10px] md:text-xs text-slate-400 font-semibold italic text-center">Tap the player if the video does not start automatically</p>
     </div>
   </div>
 </div>
 
 <!-- STAGE 3: QUESTIONNAIRE -->
 <div id="stage-questionnaire" class="hidden w-full flex justify-center">
-  <div class="w-full max-w-4xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
-    <div class="bg-slate-50 p-6 md:p-8 border-b border-slate-100">
+  <div class="w-full max-w-3xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
+    <div class="bg-slate-50 p-5 md:p-7 border-b border-slate-100">
       <div class="flex justify-between items-center mb-2">
-        <span id="question-category-code" class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Category</span>
-        <span id="question-count-label" class="text-slate-400 text-sm font-medium">Question 1 of 22</span>
+        <span id="question-category-code" class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Category</span>
+        <span id="question-count-label" class="text-slate-400 text-xs md:text-sm font-semibold">Question 1 of 22</span>
       </div>
-      <h2 id="question-text" class="text-2xl md:text-3xl font-semibold text-slate-800 leading-tight">Question text?</h2>
+      <h2 id="question-text" class="text-xl md:text-2xl font-bold text-slate-800 leading-snug">Question text?</h2>
     </div>
 
-    <div class="p-8 md:p-12 flex-1">
+    <div class="p-5 md:p-10 flex-1 flex flex-col justify-center">
       <!-- 5-Point Likert Scale Container -->
-      <div id="likert-container" class="grid grid-cols-5 gap-3 sm:gap-6">
+      <div id="likert-container" class="grid grid-cols-5 gap-1.5 sm:gap-4 md:gap-6">
         <script>
-          const labels = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"];
           for(let i=1; i<=5; i++) {
             document.write(`
-              <button onclick="selectRating(${i})" class="group flex flex-col items-center gap-3">
-                <div id="likert-box-${i}" class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-xl font-bold text-slate-300 transition-all">
+              <button onclick="selectRating(${i})" class="group flex flex-col items-center gap-2 flex-1 min-w-0">
+                <div id="likert-box-${i}" class="w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-2 border-slate-100 flex items-center justify-center text-base sm:text-xl font-bold text-slate-300 transition-all">
                   ${i}
                 </div>
-                <span class="text-[9px] font-bold uppercase text-slate-400 text-center leading-tight">${labels[i-1]}</span>
+                <span id="likert-label-${i}" class="text-[8px] sm:text-[10px] md:text-xs font-extrabold uppercase text-slate-700 group-hover:text-slate-900 text-center leading-none sm:leading-tight tracking-tighter sm:tracking-normal break-words w-full px-0.5"></span>
               </button>
             `);
           }
@@ -168,9 +172,9 @@ body { font-family: 'Inter', sans-serif; }
       </div>
     </div>
 
-    <div class="bg-slate-50 p-6 border-t border-slate-100 flex justify-between items-center">
-      <button id="ques-prev-btn" onclick="prevQuestion()" class="px-8 py-3 rounded-xl border border-slate-300 text-slate-500 font-bold hover:bg-slate-100 transition-colors">Previous</button>
-      <button id="ques-next-btn" onclick="nextQuestion()" class="px-12 py-3.5 rounded-xl bg-orange-500 text-white font-bold shadow-lg hover:bg-orange-600 transition-all uppercase text-xs">Next Question</button>
+    <div class="bg-slate-50 p-4 md:p-6 border-t border-slate-100 flex justify-between items-center">
+      <button id="ques-prev-btn" onclick="prevQuestion()" class="px-6 py-2.5 rounded-xl border border-slate-300 text-slate-500 text-xs md:text-sm font-bold hover:bg-slate-100 transition-colors">Previous</button>
+      <button id="ques-next-btn" onclick="nextQuestion()" class="px-8 py-3 rounded-xl bg-orange-500 text-white text-xs md:text-sm font-bold shadow-lg hover:bg-orange-600 transition-all uppercase tracking-wider">Next Question</button>
     </div>
   </div>
 </div>
@@ -178,9 +182,9 @@ body { font-family: 'Inter', sans-serif; }
 <!-- STAGE 4: COMPLETED -->
 <div id="stage-completed" class="hidden text-center bg-white p-12 rounded-3xl shadow-xl max-w-sm w-full border border-slate-200">
   <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="check" class="w-10 h-10"></i></div>
-  <h2 class="text-2xl font-bold font-display uppercase text-slate-800">Survey Complete!</h2>
-  <p class="text-slate-500 text-sm mt-2 mb-8">All responses have been recorded securely.</p>
-  <button onclick="location.reload()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs">New Participant</button>
+  <h2 id="success-title-text" class="text-2xl font-bold font-display uppercase text-slate-800">Survey Complete!</h2>
+  <p id="success-subtitle-text" class="text-slate-500 text-sm mt-2 mb-8">All responses have been recorded securely.</p>
+  <button onclick="location.reload()" class="w-full bg-slate-800 text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs"><span id="success-btn-text">New Participant</span></button>
 </div>
 </main>
 
@@ -190,34 +194,223 @@ body { font-family: 'Inter', sans-serif; }
 </footer>
 
 <script>
-// Remaining general questions list (AR1 to AR5 removed as they are asked after each video)
+// Global Language State
+let currentLang = 'en';
+
+const TRANSLATIONS = {
+  en: {
+    title: "Advertising survey",
+    subtitle: "Please fill in details to begin",
+    nameLabel: "1. Participant Full Name:",
+    namePlaceholder: "Enter name...",
+    ageLabel: "2. Participant Age:",
+    ageSelect: "Select Age...",
+    ageSuffix: "Years Old",
+    classLabel: "3. Current Class Group:",
+    classPlaceholder: "e.g. Grade 5",
+    genderLabel: "4. Gender:",
+    boy: "Boy 👦",
+    girl: "Girl 👧",
+    schoolLabel: "5. School Classification:",
+    private: "Private",
+    government: "Government",
+    siblingLabel: "6. Sibling Count:",
+    screentimeLabel: "7. Daily Screen Time:",
+    screentimeSelect: "Select duration...",
+    consentText: "As a parent or legal guardian, I hereby provide consent for my child to participate in this survey and agree to the secure transmission of their responses for academic research purposes.",
+    btnProceed: "Proceed to Videos",
+    tapMsg: "Tap the player if the video does not start automatically",
+    prevBtn: "Previous",
+    nextBtn: "Next Question",
+    nextBtnFinal: "Proceed to Final Section",
+    nextBtnSubmit: "Submit Survey",
+    favTitle: "Which advertisement did you like the most?",
+    overallChoice: "Overall Choice",
+    adPreference: "Ad Preference",
+    successTitle: "Survey Complete!",
+    successSub: "All responses have been recorded securely.",
+    newPart: "New Participant",
+    adFeedback: "Ad Feedback",
+    adNumberLabel: "Ad",
+    adOfLabel: "of",
+    questionNumLabel: "Question",
+    questionOfLabel: "of",
+    likertLabels: ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]
+  },
+  hi: {
+    title: "वीडियो और विज्ञापन सर्वे",
+    subtitle: "चलो शुरू करते हैं! अपनी जानकारी यहाँ भरो:",
+    nameLabel: "1. अपना पूरा नाम लिखो:",
+    namePlaceholder: "यहाँ नाम लिखो...",
+    ageLabel: "2. तुम्हारी उम्र कितनी है?:",
+    ageSelect: "उम्र चुनो...",
+    ageSuffix: "साल",
+    classLabel: "3. तुम कौन सी क्लास में पढ़ते हो?:",
+    classPlaceholder: "जैसे: क्लास 5",
+    genderLabel: "4. लड़का या लड़की?:",
+    boy: "लड़का 👦",
+    girl: "लड़की 👧",
+    schoolLabel: "5. तुम्हारा स्कूल कैसा है?:",
+    private: "प्राइवेट स्कूल",
+    government: "सरकारी स्कूल",
+    siblingLabel: "6. तुम्हारे कितने भाई-बहन हैं?:",
+    screentimeLabel: "7. तुम रोज़ कितनी देर फ़ोन या टीवी देखते हो?:",
+    screentimeSelect: "समय चुनो...",
+    consentText: "एक अभिभावक (माता-पिता/गार्जियन) के रूप में, मैं अपने बच्चे को इस सर्वे में भाग लेने की अनुमति देता/देती हूँ।",
+    btnProceed: "चलो वीडियो देखते हैं! 🎥",
+    tapMsg: "यदि वीडियो अपने आप शुरू न हो, तो स्क्रीन पर टैप करें",
+    prevBtn: "पीछे",
+    nextBtn: "अगला प्रश्न",
+    nextBtnFinal: "अंतिम भाग पर जाएँ",
+    nextBtnSubmit: "सर्वे जमा करें",
+    favTitle: "तुम्हें कौन सा विज्ञापन सबसे ज़्यादा पसंद आया?",
+    overallChoice: "सबसे बेस्ट",
+    adPreference: "पसंदीदा विज्ञापन",
+    successTitle: "सर्वे पूरा हुआ!",
+    successSub: "आपके सभी उत्तर सुरक्षित रूप से दर्ज कर लिए गए हैं।",
+    newPart: "नया सर्वे शुरू करें",
+    adFeedback: "विज्ञापन फीडबैक",
+    adNumberLabel: "विज्ञापन",
+    adOfLabel: "/",
+    questionNumLabel: "प्रश्न",
+    questionOfLabel: "/",
+    likertLabels: ["बिल्कुल नहीं!", "नहीं", "ठीक-ठाक", "हाँ", "हाँ, बिल्कुल!"]
+  }
+};
+
+// General survey questions translated naturally for a 10-year-old child
 const SURVEY_QUESTIONS = [
-{ id: "ER1", cat: "Emotional Reaction", text: "The advertisement made me happy." },
-{ id: "ER2", cat: "Emotional Reaction", text: "The advertisement was exciting." },
-{ id: "ER4", cat: "Emotional Reaction", text: "The advertisement made the product look fun." },
-{ id: "PD1", cat: "Purchase Intention", text: "I want this product." },
-{ id: "PD2", cat: "Purchase Intention", text: "I would like my parents to buy this product for me." },
-{ id: "PD3", cat: "Purchase Intention", text: "I may ask my parents to buy this product." },
-{ id: "PD4", cat: "Purchase Intention", text: "I think this product is better than other products." },
-{ id: "PD5", cat: "Purchase Intention", text: "I would feel happy if I got this product." },
-{ id: "PP1", cat: "Child Influence Attempts", text: "I will ask my parents to buy this product many times." },
-{ id: "PP2", cat: "Child Influence Attempts", text: "I will remind my parents again if they refuse." },
-{ id: "PP3", cat: "Child Influence Attempts", text: "I may feel upset if my parents do not buy this product." },
-{ id: "PP4", cat: "Child Influence Attempts", text: "I may compare this product with what my friends have." },
-{ id: "PP5", cat: "Child Influence Attempts", text: "I will try hard to convince my parents to buy this product." },
-{ id: "PI1", cat: "Peer Influence", text: "My friends influence what products I like." },
-{ id: "PI2", cat: "Peer Influence", text: "I want products that my friends have." },
-{ id: "PI3", cat: "Peer Influence", text: "I feel left out if I do not have products like my friends." }
+  { 
+    id: "ER1", 
+    cat: "Emotional Reaction", 
+    cat_hi: "मन की बात",
+    text_en: "The advertisement made me happy.", 
+    text_hi: "विज्ञापन देखकर मुझे खुशी हुई।" 
+  },
+  { 
+    id: "ER2", 
+    cat: "Emotional Reaction", 
+    cat_hi: "मन की बात",
+    text_en: "The advertisement was exciting.", 
+    text_hi: "विज्ञापन देखकर मुझे बहुत मज़ा आया!" 
+  },
+  { 
+    id: "ER4", 
+    cat: "Emotional Reaction", 
+    cat_hi: "मन की बात",
+    text_en: "The advertisement made the product look fun.", 
+    text_hi: "विज्ञापन में वो चीज़ बहुत मज़ेदार लग रही थी।" 
+  },
+  { 
+    id: "PD1", 
+    cat: "Purchase Intention", 
+    cat_hi: "पसंद नापसंद",
+    text_en: "I want this product.", 
+    text_hi: "मुझे यह चीज़ चाहिए।" 
+  },
+  { 
+    id: "PD2", 
+    cat: "Purchase Intention", 
+    cat_hi: "पसंद नापसंद",
+    text_en: "I would like my parents to buy this product for me.", 
+    text_hi: "मैं चाहता हूँ कि मम्मी-पापा मेरे लिए यह चीज़ खरीदें।" 
+  },
+  { 
+    id: "PD3", 
+    cat: "Purchase Intention", 
+    cat_hi: "पसंद नापसंद",
+    text_en: "I may ask my parents to buy this product.", 
+    text_hi: "मैं मम्मी-पापा से यह चीज़ दिलाने के लिए कहूँगा/कहूँगी।" 
+  },
+  { 
+    id: "PD4", 
+    cat: "Purchase Intention", 
+    cat_hi: "पसंद नापसंद",
+    text_en: "I think this product is better than other products.", 
+    text_hi: "मुझे लगता है कि यह चीज़ बाकी चीज़ों से ज़्यादा अच्छी है।" 
+  },
+  { 
+    id: "PD5", 
+    cat: "Purchase Intention", 
+    cat_hi: "पसंद नापसंद",
+    text_en: "I would feel happy if I got this product.", 
+    text_hi: "अगर मुझे यह चीज़ मिल जाए, तो मैं बहुत खुश हो जाऊँगा/जाऊँगी।" 
+  },
+  { 
+    id: "PP1", 
+    cat: "Child Influence Attempts", 
+    cat_hi: "ज़िद और डिमांड",
+    text_en: "I will ask my parents to buy this product many times.", 
+    text_hi: "मैं मम्मी-पापा से यह चीज़ दिलाने की बार-बार ज़िद करूँगा/करूँगी।" 
+  },
+  { 
+    id: "PP2", 
+    cat: "Child Influence Attempts", 
+    cat_hi: "ज़िद और डिमांड",
+    text_en: "I will remind my parents again if they refuse.", 
+    text_hi: "अगर मम्मी-पापा मना कर देंगे, तो मैं फिर से कहूँगा/कहूँगी।" 
+  },
+  { 
+    id: "PP3", 
+    cat: "Child Influence Attempts", 
+    cat_hi: "ज़िद और डिमांड",
+    text_en: "I may feel upset if my parents do not buy this product.", 
+    text_hi: "अगर मम्मी-पापा ने यह चीज़ नहीं दिलाई, तो मैं उदास हो जाऊँगा/जाऊँगी।" 
+  },
+  { 
+    id: "PP4", 
+    cat: "Child Influence Attempts", 
+    cat_hi: "ज़िद और डिमांड",
+    text_en: "I may compare this product with what my friends have.", 
+    text_hi: "मैं देखूँगा कि क्या यह चीज़ मेरे दोस्तों के पास भी है।" 
+  },
+  { 
+    id: "PP5", 
+    cat: "Child Influence Attempts", 
+    cat_hi: "ज़िद और डिमांड",
+    text_en: "I will try hard to convince my parents to buy this product.", 
+    text_hi: "मैं मम्मी-पापा को यह चीज़ दिलाने के लिए मनाने की पूरी कोशिश करूँगा/करूँगी।" 
+  },
+  { 
+    id: "PI1", 
+    cat: "Peer Influence", 
+    cat_hi: "दोस्तों का प्रभाव",
+    text_en: "My friends influence what products I like.", 
+    text_hi: "जो चीज़ें मेरे दोस्तों को पसंद हैं, वो मुझे भी पसंद आती हैं।" 
+  },
+  { 
+    id: "PI2", 
+    cat: "Peer Influence", 
+    cat_hi: "दोस्तों का प्रभाव",
+    text_en: "I want products that my friends have.", 
+    text_hi: "मुझे वो चीज़ें चाहिए जो मेरे दोस्तों के पास हैं।" 
+  },
+  { 
+    id: "PI3", 
+    cat: "Peer Influence", 
+    cat_hi: "दोस्तों का प्रभाव",
+    text_en: "I feel left out if I do not have products like my friends.", 
+    text_hi: "अगर मेरे पास वो चीज़ें न हों जो मेरे दोस्तों के पास हैं, तो मुझे बुरा लगता है।" 
+  }
 ];
 
 // Ad-specific questions asked after each video
-const AD_SPEC_QUESTIONS = [
-"I watched the advertisement carefully.",
-"I remember the product shown in the advertisement.",
-"The advertisement was most interesting.",
-"I liked the way the advertisement looked.",
-"I would like to watch the advertisement again."
-];
+const AD_SPEC_QUESTIONS = {
+  en: [
+    "I watched the advertisement carefully.",
+    "I remember the product shown in the advertisement.",
+    "The advertisement was most interesting.",
+    "I liked the way the advertisement looked.",
+    "I would like to watch the advertisement again."
+  ],
+  hi: [
+    "मैंने विज्ञापन को बहुत ध्यान से देखा।",
+    "मुझे विज्ञापन में दिखाई गई चीज़ याद है।",
+    "यह विज्ञापन बहुत ही मज़ेदार था।",
+    "मुझे विज्ञापन दिखने और प्रस्तुत करने का तरीका बहुत अच्छा लगा।",
+    "मैं इस विज्ञापन को दोबारा देखना चाहूँगा/चाहूँगी।"
+  ]
+};
 
 // Target videos list
 const VIDEOS = [
@@ -249,6 +442,7 @@ let preferredAd = "";
 window.onload = () => {
 lucide.createIcons();
 updateRecordsCount();
+setLanguage('en'); // Set English as default language
 };
 
 function updateRecordsCount() {
@@ -256,21 +450,92 @@ const logs = JSON.parse(localStorage.getItem('survey_logs') || "[]");
 document.getElementById('header-records-badge').innerText = `Stored Records: ${logs.length}`;
 }
 
+function setLanguage(lang) {
+currentLang = lang;
+
+// Toggle button visual states
+const btnEn = document.getElementById('lang-btn-en');
+const btnHi = document.getElementById('lang-btn-hi');
+if(lang === 'en') {
+  btnEn.className = "px-3 py-1 text-xs font-extrabold uppercase rounded-md transition-all bg-white text-orange-600 shadow-sm";
+  btnHi.className = "px-3 py-1 text-xs font-extrabold uppercase rounded-md transition-all text-slate-550 hover:text-slate-700";
+} else {
+  btnHi.className = "px-3 py-1 text-xs font-extrabold uppercase rounded-md transition-all bg-white text-orange-600 shadow-sm";
+  btnEn.className = "px-3 py-1 text-xs font-extrabold uppercase rounded-md transition-all text-slate-550 hover:text-slate-700";
+}
+
+// Update DOM elements languages
+const t = TRANSLATIONS[currentLang];
+document.getElementById('form-title').innerText = t.title;
+document.getElementById('form-subtitle').innerText = t.subtitle;
+document.getElementById('label-name').innerText = t.nameLabel;
+document.getElementById('input-name').placeholder = t.namePlaceholder;
+document.getElementById('label-age').innerText = t.ageLabel;
+document.getElementById('label-class').innerText = t.classLabel;
+document.getElementById('input-class').placeholder = t.classPlaceholder;
+document.getElementById('label-gender').innerText = t.genderLabel;
+document.getElementById('btn-gender-boy').innerHTML = t.boy;
+document.getElementById('btn-gender-girl').innerHTML = t.girl;
+document.getElementById('label-school').innerText = t.schoolLabel;
+document.getElementById('btn-school-private').innerText = t.private;
+document.getElementById('btn-school-govt').innerText = t.government;
+document.getElementById('label-siblings').innerText = t.siblingLabel;
+document.getElementById('label-screentime').innerText = t.screentimeLabel;
+document.getElementById('consent-text-label').innerText = t.consentText;
+document.getElementById('btn-proceed-submit').innerText = t.btnProceed;
+
+// Rebuild age values
+const ageSelect = document.getElementById('input-age');
+const savedAgeValue = ageSelect.value;
+ageSelect.innerHTML = `<option id="age-placeholder" value="">${t.ageSelect}</option>`;
+for(let i=4; i<=18; i++) {
+  ageSelect.innerHTML += `<option value="${i}">${i} ${t.ageSuffix}</option>`;
+}
+ageSelect.value = savedAgeValue;
+
+// Rebuild screen time values
+const screentimeSelect = document.getElementById('input-screentime');
+const savedSTValue = screentimeSelect.value;
+screentimeSelect.innerHTML = `
+  <option id="screentime-placeholder" value="">${t.screentimeSelect}</option>
+  <option value="Less than 1 hour">${currentLang === 'en' ? 'Under 1 Hour' : '1 घंटे से कम'}</option>
+  <option value="1-2 hours">${currentLang === 'en' ? '1 - 2 Hours' : '1 से 2 घंटे'}</option>
+  <option value="2-3 hours">${currentLang === 'en' ? '2 - 3 Hours' : '2 से 3 घंटे'}</option>
+  <option value="More than 3 hours">${currentLang === 'en' ? 'More than 3 Hours' : '3 घंटे से ज़्यादा'}</option>
+`;
+screentimeSelect.value = savedSTValue;
+
+// Dynamic labels
+document.getElementById('tap-message-text').innerText = t.tapMsg;
+document.getElementById('success-title-text').innerText = t.successTitle;
+document.getElementById('success-subtitle-text').innerText = t.successSub;
+document.getElementById('success-btn-text').innerText = t.newPart;
+
+// Update labels inside questionnaire if active
+loadQuestion();
+}
+
 function selectGender(v, b) {
 demographicsData.gender = v;
-document.querySelectorAll('.gender-btn').forEach(btn => btn.className = "gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600");
+document.querySelectorAll('.gender-btn').forEach(btn => {
+  btn.className = "gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-50 text-slate-600 transition-all";
+});
 b.className = "gender-btn border py-3 rounded-xl text-sm font-bold bg-slate-800 text-white shadow-md";
 }
 
 function selectSchool(v, b) {
 demographicsData.school = v;
-document.querySelectorAll('.school-btn').forEach(btn => btn.className = "school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm");
+document.querySelectorAll('.school-btn').forEach(btn => {
+  btn.className = "school-btn border p-3 rounded-xl text-center font-bold bg-slate-50 text-sm transition-all";
+});
 b.className = "school-btn border p-3 rounded-xl text-center font-bold bg-orange-500 text-white shadow-md";
 }
 
 function selectSiblings(v, b) {
 demographicsData.siblings = v;
-document.querySelectorAll('.sibling-btn').forEach(btn => btn.className = "sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-50");
+document.querySelectorAll('.sibling-btn').forEach(btn => {
+  btn.className = "sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-50 transition-all";
+});
 b.className = "sibling-btn border py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-white shadow-sm";
 }
 
@@ -282,7 +547,7 @@ demographicsData.class = document.getElementById('input-class').value;
 demographicsData.screenTime = document.getElementById('input-screentime').value;
 
 if(!demographicsData.name || !demographicsData.gender || !demographicsData.school || !demographicsData.siblings) {
-return alert("Please complete all demographic fields.");
+return alert(currentLang === 'en' ? "Please complete all demographic fields." : "कृपया सभी जानकारी भरें।");
 }
 flowState = "video_play";
 showStage('videos');
@@ -292,8 +557,9 @@ loadActiveVideo();
 function loadActiveVideo() {
 const v = VIDEOS[videoIndex];
 const ply = document.getElementById('f-player');
+const t = TRANSLATIONS[currentLang];
 document.getElementById('video-title').innerText = v.title;
-document.getElementById('video-count-badge').innerText = `Ad ${videoIndex+1} of 4`;
+document.getElementById('video-count-badge').innerText = `${t.adNumberLabel} ${videoIndex+1} ${t.adOfLabel} 4`;
 ply.src = v.url;
 ply.load();
 
@@ -319,17 +585,24 @@ const likertContainer = document.getElementById('likert-container');
 const favContainer = document.getElementById('favorite-ad-container');
 const prevBtn = document.getElementById('ques-prev-btn');
 const nextBtn = document.getElementById('ques-next-btn');
+const t = TRANSLATIONS[currentLang];
+
+// Always update Likert box label text languages
+for(let i=1; i<=5; i++) {
+  const lbl = document.getElementById(`likert-label-${i}`);
+  if(lbl) lbl.innerText = t.likertLabels[i-1];
+}
 
 if(flowState === "video_questions") {
   likertContainer.classList.remove('hidden');
   favContainer.classList.add('hidden');
   prevBtn.classList.add('invisible'); 
-  nextBtn.innerText = "Next Question";
+  nextBtn.innerText = t.nextBtn;
 
   const adName = VIDEOS[videoIndex].title;
-  document.getElementById('question-category-code').innerText = `Ad Feedback: ${adName}`;
-  document.getElementById('question-text').innerText = `"${AD_SPEC_QUESTIONS[videoQuestIndex]}"`;
-  document.getElementById('question-count-label').innerText = `Question ${videoQuestIndex + 1} of 5`;
+  document.getElementById('question-category-code').innerText = `${t.adFeedback}: ${adName}`;
+  document.getElementById('question-text').innerText = `"${AD_SPEC_QUESTIONS[currentLang][videoQuestIndex]}"`;
+  document.getElementById('question-count-label').innerText = `${t.questionNumLabel} ${videoQuestIndex + 1} ${t.questionOfLabel} 5`;
   
   updateLikertUI(videoFeedbackAnswers[videoIndex][videoQuestIndex]);
 
@@ -337,11 +610,11 @@ if(flowState === "video_questions") {
   likertContainer.classList.add('hidden');
   favContainer.classList.remove('hidden');
   prevBtn.classList.add('invisible');
-  nextBtn.innerText = "Proceed to Final Section";
+  nextBtn.innerText = t.nextBtnFinal;
 
-  document.getElementById('question-category-code').innerText = "Ad Preference";
-  document.getElementById('question-text').innerText = "Which advertisement did you like the most?";
-  document.getElementById('question-count-label').innerText = "Overall Choice";
+  document.getElementById('question-category-code').innerText = t.adPreference;
+  document.getElementById('question-text').innerText = t.favTitle;
+  document.getElementById('question-count-label').innerText = t.overallChoice;
   
   renderFavoriteAdSelection();
 
@@ -354,13 +627,14 @@ if(flowState === "video_questions") {
   } else {
     prevBtn.classList.add('invisible');
   }
+  prevBtn.innerText = t.prevBtn;
   
-  nextBtn.innerText = (questionIndex === SURVEY_QUESTIONS.length - 1) ? "Submit Survey" : "Next Question";
+  nextBtn.innerText = (questionIndex === SURVEY_QUESTIONS.length - 1) ? t.nextBtnSubmit : t.nextBtn;
 
   const q = SURVEY_QUESTIONS[questionIndex];
-  document.getElementById('question-category-code').innerText = q.cat;
-  document.getElementById('question-text').innerText = `"${q.text}"`;
-  document.getElementById('question-count-label').innerText = `Question ${questionIndex + 1} of ${SURVEY_QUESTIONS.length}`;
+  document.getElementById('question-category-code').innerText = currentLang === 'en' ? q.cat : q.cat_hi;
+  document.getElementById('question-text').innerText = `"${currentLang === 'en' ? q.text_en : q.text_hi}"`;
+  document.getElementById('question-count-label').innerText = `${t.questionNumLabel} ${questionIndex + 1} ${t.questionOfLabel} ${SURVEY_QUESTIONS.length}`;
   
   updateLikertUI(userAnswers[q.id]);
 }
@@ -403,24 +677,25 @@ for(let i=1; i<=5; i++) {
   const b = document.getElementById(`likert-box-${i}`);
   if(b) {
     b.className = (i === v) ?
-    "w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-4 border-orange-500 bg-orange-50 flex items-center justify-center text-xl font-bold text-orange-600 scale-110 shadow-lg" :
-    "w-14 h-14 sm:w-20 sm:h-20 rounded-2xl border-2 border-slate-100 flex items-center justify-center text-xl font-bold text-slate-300";
+    "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-4 border-orange-500 bg-orange-55 flex items-center justify-center text-base sm:text-xl font-extrabold text-orange-600 scale-105 shadow-md" :
+    "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-2 border-slate-200 bg-slate-55 flex items-center justify-center text-base sm:text-xl font-bold text-slate-400 hover:border-slate-300";
   }
 }
 }
 
 // Function to handle moving forward
 function nextQuestion() {
+const errorText = currentLang === 'en' ? "Please select a rating." : "कृपया अपना उत्तर चुनें।";
 if (flowState === "video_questions") {
-  if(!videoFeedbackAnswers[videoIndex][videoQuestIndex]) return alert("Please select a rating.");
+  if(!videoFeedbackAnswers[videoIndex][videoQuestIndex]) return alert(errorText);
   advanceFlow();
 } else if (flowState === "favorite_ad") {
-  if(!preferredAd) return alert("Please select your favorite advertisement to proceed.");
+  if(!preferredAd) return alert(currentLang === 'en' ? "Please select your favorite advertisement to proceed." : "कृपया आगे बढ़ने के लिए अपने पसंदीदा विज्ञापन को चुनें।");
   flowState = "general_questions";
   questionIndex = 0;
   loadQuestion();
 } else if (flowState === "general_questions") {
-  if(!userAnswers[SURVEY_QUESTIONS[questionIndex].id]) return alert("Please select a rating.");
+  if(!userAnswers[SURVEY_QUESTIONS[questionIndex].id]) return alert(errorText);
   advanceFlow();
 }
 }
