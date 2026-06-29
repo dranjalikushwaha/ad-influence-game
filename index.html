@@ -18,11 +18,13 @@ body { font-family: 'Inter', sans-serif; }
 </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col relative overflow-x-hidden select-none">
+<!-- Background Ambient Patterns -->
 <div class="fixed inset-0 -z-10 overflow-hidden bg-slate-100">
 <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-orange-100/40 blur-3xl animate-drift-1"></div>
 <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px); background-size: 40px 40px;"></div>
 </div>
 
+<!-- Header -->
 <header class="w-full h-16 flex items-center justify-between px-4 md:px-8 bg-orange-500 text-white font-semibold shadow-md relative z-30 shrink-0">
 <div class="flex items-center gap-2 md:gap-3">
 <span class="text-sm md:text-lg tracking-tight uppercase font-black">Ad Research Portal</span>
@@ -33,11 +35,14 @@ body { font-family: 'Inter', sans-serif; }
 </div>
 </header>
 
+<!-- Main Content Stage -->
 <main class="flex-1 flex items-center justify-center p-3 md:p-8 relative z-20">
 
+<!-- STAGE 1: DEMOGRAPHICS WITH LANGUAGE SELECTOR -->
 <div id="stage-demographics" class="w-full flex justify-center">
   <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
     
+    <!-- Top Bar Language Switcher -->
     <div class="flex justify-between items-center px-6 py-3 border-b border-slate-100 bg-slate-55">
       <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Select Language / भाषा चुनें:</span>
       <div class="inline-flex rounded-lg p-1 bg-slate-200/70">
@@ -103,6 +108,7 @@ body { font-family: 'Inter', sans-serif; }
         </select>
       </div>
 
+      <!-- Consent Agreement Checkbox -->
       <div class="flex items-start gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-200">
         <input type="checkbox" id="input-consent" required class="w-5 h-5 mt-0.5 accent-orange-500 rounded cursor-pointer focus:ring-orange-500">
         <label id="consent-text-label" for="input-consent" class="text-xs text-slate-500 font-semibold leading-relaxed cursor-pointer">
@@ -115,6 +121,7 @@ body { font-family: 'Inter', sans-serif; }
   </div>
 </div>
 
+<!-- STAGE 2: VIDEOS (Fluid Responsive Player Container) -->
 <div id="stage-videos" class="hidden w-full flex justify-center">
   <div class="w-full max-w-2xl bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
     <div class="bg-orange-500 p-5 text-white text-center">
@@ -131,9 +138,10 @@ body { font-family: 'Inter', sans-serif; }
   </div>
 </div>
 
+<!-- STAGE 3: QUESTIONNAIRE -->
 <div id="stage-questionnaire" class="hidden w-full flex justify-center">
   <div class="w-full max-w-3xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
-    <div class="bg-slate-55 p-5 md:p-7 border-b border-slate-100">
+    <div class="bg-slate-50 p-5 md:p-7 border-b border-slate-100">
       <div class="flex justify-between items-center mb-2">
         <span id="question-category-code" class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Category</span>
         <span id="question-count-label" class="text-slate-400 text-xs md:text-sm font-semibold">Question 1 of 22</span>
@@ -142,6 +150,7 @@ body { font-family: 'Inter', sans-serif; }
     </div>
 
     <div class="p-5 md:p-10 flex-1 flex flex-col justify-center">
+      <!-- 5-Point Likert Scale Container -->
       <div id="likert-container" class="grid grid-cols-5 gap-1.5 sm:gap-4 md:gap-6">
         <script>
           for(let i=1; i<=5; i++) {
@@ -157,8 +166,10 @@ body { font-family: 'Inter', sans-serif; }
         </script>
       </div>
 
+      <!-- Preferred Ad Select Grid -->
       <div id="favorite-ad-container" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4">
-        </div>
+        <!-- Filled programmatically with 4 video items -->
+      </div>
     </div>
 
     <div class="bg-slate-50 p-4 md:p-6 border-t border-slate-100 flex justify-between items-center">
@@ -168,6 +179,7 @@ body { font-family: 'Inter', sans-serif; }
   </div>
 </div>
 
+<!-- STAGE 4: COMPLETED -->
 <div id="stage-completed" class="hidden text-center bg-white p-12 rounded-3xl shadow-xl max-w-sm w-full border border-slate-200">
   <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="check" class="w-10 h-10"></i></div>
   <h2 id="success-title-text" class="text-2xl font-bold font-display uppercase text-slate-800">Survey Complete!</h2>
@@ -176,6 +188,7 @@ body { font-family: 'Inter', sans-serif; }
 </div>
 </main>
 
+<!-- Page Footer -->
 <footer class="w-full h-12 flex items-center justify-center bg-white border-t border-slate-200 text-slate-500 text-[10px] md:text-xs font-semibold tracking-wide relative z-30 shrink-0">
   <span>Author: Dr. Subhojit Banerjee, Anjali Kushwaha & Vaishali Sharma - Gautam Buddha University</span>
 </footer>
@@ -232,11 +245,11 @@ const TRANSLATIONS = {
     ageLabel: "2. तुम्हारी उम्र कितनी है?:",
     ageSelect: "उम्र चुनो...",
     ageSuffix: "साल",
-    classLabel: "3. तुम कौन सी क्लास में पढ़ते हो?:",
+    classLabel: "3. तुम कौन सी क्लास में पढ़ते हो?:",
     classPlaceholder: "जैसे: क्लास 5",
     genderLabel: "4. लड़का या लड़की?:",
-    boy: "लड़का 👦",
-    girl: "लड़की 👧",
+    boy: "लड़का 👦",
+    girl: "लड़की 👧",
     schoolLabel: "5. तुम्हारा स्कूल कैसा है?:",
     private: "प्राइवेट स्कूल",
     government: "सरकारी स्कूल",
@@ -404,7 +417,7 @@ const VIDEOS = [
 { title: "Doritos Sling Baby", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20SLING%20BABY%20_%20Doritos%20Commercial%20_%20%23superbowl%20%23commercials%20480P.mp4" },
 { title: "Frooti Mango", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Choos%20The%20Mango%2C%20Choose%20%23TheFrootiLife.%20720P.mp4" },
 { title: "New Maggi Oats Noodles", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20New%20MAGGI%20OATS%20Noodles%20AD%20%23HealthIsEnjoyable%20720P.mp4" },
-{ title: "Cadbury Dairy Milk Lickables", url: "https://qurppobjmbxeafytfaya.supabase.co/storage/v1/object/public/k/vidssave.com%20Cadbury%20Dairy%20Milk%20Lickables%20720P.mp4" }
+{ title: "Cadbury Dairy Milk Lickables", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Cadbury%20Dairy%20Milk%20Lickables%20720P.mp4" }
 ];
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQUHc5ugq1jlCRVqEyU6YRXgSDwCXeCCaMBA7yXPznWbs1MBycA4RvzcEPP-Gx2ff1xw/exec';
@@ -423,7 +436,7 @@ let videoFeedbackAnswers = {
 
 let flowState = "demographics"; 
 let videoQuestIndex = 0;       
-let questionIndex = 0;          
+let questionIndex = 0;         
 let preferredAd = "";          
 
 window.onload = () => {
@@ -664,10 +677,34 @@ for(let i=1; i<=5; i++) {
   const b = document.getElementById(`likert-box-${i}`);
   if(b) {
     b.className = (i === v) ?
-    "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-4 border-orange-500 bg-orange-50 flex items-center justify-center text-base sm:text-xl font-black text-orange-600 scale-105 shadow-sm transition-all" :
-    "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-2 border-slate-100 flex items-center justify-center text-base sm:text-xl font-bold text-slate-300 transition-all";
+    "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-4 border-orange-500 bg-orange-55 flex items-center justify-center text-base sm:text-xl font-extrabold text-orange-600 scale-105 shadow-md" :
+    "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-2 border-slate-200 bg-slate-55 flex items-center justify-center text-base sm:text-xl font-bold text-slate-400 hover:border-slate-300";
   }
 }
+}
+
+// Function to handle moving forward
+function nextQuestion() {
+const errorText = currentLang === 'en' ? "Please select a rating." : "कृपया अपना उत्तर चुनें।";
+if (flowState === "video_questions") {
+  if(!videoFeedbackAnswers[videoIndex][videoQuestIndex]) return alert(errorText);
+  advanceFlow();
+} else if (flowState === "favorite_ad") {
+  if(!preferredAd) return alert(currentLang === 'en' ? "Please select your favorite advertisement to proceed." : "कृपया आगे बढ़ने के लिए अपने पसंदीदा विज्ञापन को चुनें।");
+  flowState = "general_questions";
+  questionIndex = 0;
+  loadQuestion();
+} else if (flowState === "general_questions") {
+  if(!userAnswers[SURVEY_QUESTIONS[questionIndex].id]) return alert(errorText);
+  advanceFlow();
+}
+}
+
+function prevQuestion() { 
+if(flowState === "general_questions" && questionIndex > 0) { 
+  questionIndex--; 
+  loadQuestion(); 
+} 
 }
 
 function advanceFlow() {
@@ -683,76 +720,104 @@ if(flowState === "video_questions") {
       loadActiveVideo();
     } else {
       flowState = "favorite_ad";
+      showStage('questionnaire');
       loadQuestion();
     }
   }
-} else if (flowState === "general_questions") {
+} else if(flowState === "general_questions") {
   if(questionIndex < SURVEY_QUESTIONS.length - 1) {
     questionIndex++;
     loadQuestion();
   } else {
-    transmitPayloadData();
+    finalize();
   }
 }
 }
 
-function nextQuestion() {
-if(flowState === "favorite_ad") {
-  if(!preferredAd) return alert(currentLang === 'en' ? "Please select your favorite advertisement." : "कृपया अपना पसंदीदा विज्ञापन चुनें।");
-  flowState = "general_questions";
-  questionIndex = 0;
-  loadQuestion();
-} else {
-  advanceFlow();
-}
-}
-
-function prevQuestion() {
-if(flowState === "general_questions") {
-  if(questionIndex > 0) {
-    questionIndex--;
-    loadQuestion();
-  }
-}
-}
-
-function transmitPayloadData() {
-if(isSubmitting) return;
+async function finalize() {
+if (isSubmitting) return; 
 isSubmitting = true;
 
-const finalPayload = {
-  timestamp: new Date().toISOString(),
-  language: currentLang,
-  ...demographicsData,
-  preferredAd: preferredAd,
-  userAnswers: JSON.stringify(userAnswers),
-  videoFeedbackAnswers: JSON.stringify(videoFeedbackAnswers)
+const payload = {
+  name: demographicsData.name || "",
+  age: demographicsData.age || "",
+  class: demographicsData.class || "",
+  gender: demographicsData.gender || "",
+  school: demographicsData.school || "",
+  siblings: demographicsData.siblings || "",
+  screenTime: demographicsData.screenTime || "",
+
+  ad1_q1: videoFeedbackAnswers[0][0] || "",
+  ad1_q2: videoFeedbackAnswers[0][1] || "",
+  ad1_q3: videoFeedbackAnswers[0][2] || "",
+  ad1_q4: videoFeedbackAnswers[0][3] || "",
+  ad1_q5: videoFeedbackAnswers[0][4] || "",
+
+  ad2_q1: videoFeedbackAnswers[1][0] || "",
+  ad2_q2: videoFeedbackAnswers[1][1] || "",
+  ad2_q3: videoFeedbackAnswers[1][2] || "",
+  ad2_q4: videoFeedbackAnswers[1][3] || "",
+  ad2_q5: videoFeedbackAnswers[1][4] || "",
+
+  ad3_q1: videoFeedbackAnswers[2][0] || "",
+  ad3_q2: videoFeedbackAnswers[2][1] || "",
+  ad3_q3: videoFeedbackAnswers[2][2] || "",
+  ad3_q4: videoFeedbackAnswers[2][3] || "",
+  ad3_q5: videoFeedbackAnswers[2][4] || "",
+
+  ad4_q1: videoFeedbackAnswers[3][0] || "",
+  ad4_q2: videoFeedbackAnswers[3][1] || "",
+  ad4_q3: videoFeedbackAnswers[3][2] || "",
+  ad4_q4: videoFeedbackAnswers[3][3] || "",
+  ad4_q5: videoFeedbackAnswers[3][4] || "",
+
+  favorite_ad: preferredAd || "",
+
+  ER1: userAnswers["ER1"] || "",
+  ER2: userAnswers["ER2"] || "",
+  ER3: userAnswers["ER3"] || "",
+  ER4: userAnswers["ER4"] || "",
+  PD1: userAnswers["PD1"] || "",
+  PD2: userAnswers["PD2"] || "",
+  PD3: userAnswers["PD3"] || "",
+  PD4: userAnswers["PD4"] || "",
+  PD5: userAnswers["PD5"] || "",
+  PP1: userAnswers["PP1"] || "",
+  PP2: userAnswers["PP2"] || "",
+  PP3: userAnswers["PP3"] || "",
+  PP4: userAnswers["PP4"] || "",
+  PP5: userAnswers["PP5"] || "",
+  PI1: userAnswers["PI1"] || "",
+  PI2: userAnswers["PI2"] || "",
+  PI3: userAnswers["PI3"] || "",
+
+  submittedAt: new Date().toISOString()
 };
 
 const logs = JSON.parse(localStorage.getItem('survey_logs') || "[]");
-logs.push(finalPayload);
+logs.push(payload);
 localStorage.setItem('survey_logs', JSON.stringify(logs));
 updateRecordsCount();
 
-showStage('completed');
-
-fetch(SCRIPT_URL, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(finalPayload)
-})
-.then(() => { console.log("Payload sent safely."); })
-.catch(err => { console.error("Endpoint push anomaly encountered:", err); })
-.finally(() => { isSubmitting = false; });
+try {
+  await fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+} catch(error) {
+  console.log("Transmission error:", error);
 }
 
-function showStage(stageId) {
-document.getElementById('stage-demographics').classList.add('hidden');
-document.getElementById('stage-videos').classList.add('hidden');
-document.getElementById('stage-questionnaire').classList.add('hidden');
-document.getElementById('stage-completed').classList.add('hidden');
-document.getElementById('stage-' + stageId).classList.remove('hidden');
+showStage('completed');
+}
+
+function showStage(id) {
+['stage-demographics', 'stage-videos', 'stage-questionnaire', 'stage-completed'].forEach(s => document.getElementById(s).classList.add('hidden'));
+document.getElementById('stage-' + id).classList.remove('hidden');
 }
 </script>
 </body>
