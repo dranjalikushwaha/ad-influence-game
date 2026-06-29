@@ -131,7 +131,15 @@ body { font-family: 'Inter', sans-serif; }
 
     <div class="p-4 sm:p-6 md:p-8 space-y-4 flex flex-col items-center">
       <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
-        <video id="f-player" onended="videoPlayEnded()" onclick="this.play()" class="w-full h-full object-contain cursor-pointer" autoplay playsinline></video>
+        <video id="f-player" onended="videoPlayEnded()" onclick="this.play()" onplay="handleVideoPlaying()" onplaying="handleVideoPlaying()" class="w-full h-full object-contain cursor-pointer" playsinline></video>
+
+        <!-- Manual Play Overlay: shown whenever autoplay is blocked or playback hasn't started -->
+        <button type="button" id="manual-play-overlay" onclick="manualPlayVideo()" class="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-3 bg-black/50 text-white transition-opacity hidden">
+          <span class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/90 text-orange-600 flex items-center justify-center shadow-lg">
+            <i data-lucide="play" class="w-8 h-8 md:w-10 md:h-10 fill-current"></i>
+          </span>
+          <span id="manual-play-text" class="text-xs md:text-sm font-bold uppercase tracking-wider">Tap to Play Video</span>
+        </button>
       </div>
       <p id="tap-message-text" class="text-[10px] md:text-xs text-slate-400 font-semibold italic text-center">Tap the player if the video does not start automatically</p>
     </div>
@@ -220,6 +228,7 @@ const TRANSLATIONS = {
     consentText: "As a parent or legal guardian, I hereby provide consent for my child to participate in this survey and agree to the secure transmission of their responses for academic research purposes.",
     btnProceed: "Proceed to Videos",
     tapMsg: "Tap the player if the video does not start automatically",
+    tapToPlay: "Tap to Play Video",
     prevBtn: "Previous",
     nextBtn: "Next Question",
     nextBtnFinal: "Proceed to Final Section",
@@ -245,11 +254,11 @@ const TRANSLATIONS = {
     ageLabel: "2. तुम्हारी उम्र कितनी है?:",
     ageSelect: "उम्र चुनो...",
     ageSuffix: "साल",
-    classLabel: "3. तुम कौन सी क्लास में पढ़ते हो?:",
+    classLabel: "3. तुम कौन सी क्लास में पढ़ते हो?:",
     classPlaceholder: "जैसे: क्लास 5",
     genderLabel: "4. लड़का या लड़की?:",
-    boy: "लड़का 👦",
-    girl: "लड़की 👧",
+    boy: "लड़का 👦",
+    girl: "लड़की 👧",
     schoolLabel: "5. तुम्हारा स्कूल कैसा है?:",
     private: "प्राइवेट स्कूल",
     government: "सरकारी स्कूल",
@@ -259,6 +268,7 @@ const TRANSLATIONS = {
     consentText: "एक अभिभावक (माता-पिता/गार्जियन) के रूप में, मैं अपने बच्चे को इस सर्वे में भाग लेने की अनुमति देता/देती हूँ।",
     btnProceed: "चलो वीडियो देखते हैं! 🎥",
     tapMsg: "यदि वीडियो अपने आप शुरू न हो, तो स्क्रीन पर टैप करें",
+    tapToPlay: "वीडियो चलाने के लिए टैप करें",
     prevBtn: "पीछे",
     nextBtn: "अगला प्रश्न",
     nextBtnFinal: "अंतिम भाग पर जाएँ",
@@ -439,6 +449,10 @@ let videoQuestIndex = 0;
 let questionIndex = 0;         
 let preferredAd = "";          
 
+// Tracks whether the current video has actually started playing,
+// so we know whether to show the manual "Tap to Play" overlay.
+let videoHasStarted = false;
+
 window.onload = () => {
 lucide.createIcons();
 updateRecordsCount();
@@ -507,6 +521,8 @@ screentimeSelect.value = savedSTValue;
 
 // Dynamic labels
 document.getElementById('tap-message-text').innerText = t.tapMsg;
+const manualPlayTextEl = document.getElementById('manual-play-text');
+if(manualPlayTextEl) manualPlayTextEl.innerText = t.tapToPlay;
 document.getElementById('success-title-text').innerText = t.successTitle;
 document.getElementById('success-subtitle-text').innerText = t.successSub;
 document.getElementById('success-btn-text').innerText = t.newPart;
@@ -560,14 +576,74 @@ const ply = document.getElementById('f-player');
 const t = TRANSLATIONS[currentLang];
 document.getElementById('video-title').innerText = v.title;
 document.getElementById('video-count-badge').innerText = `${t.adNumberLabel} ${videoIndex+1} ${t.adOfLabel} 4`;
+
+// Reset autoplay-tracking state for the new video and hide any leftover overlay
+videoHasStarted = false;
+hideManualPlayOverlay();
+
 ply.src = v.url;
 ply.load();
 
-// Trigger browser native media play (enabled via demographics submit interaction)
+// Trigger browser native media play. Many mobile browsers (and some
+// desktop browsers with strict autoplay policies) will silently block
+// this, especially when audio is enabled or after navigating between
+// stages. If the promise rejects, or playback simply never starts,
+// we fall back to a manual "Tap to Play" button so the user is never
+// stuck looking at a frozen/black video.
 const playPromise = ply.play();
 if (playPromise !== undefined) {
-  playPromise.catch(error => {
-    console.log("Auto-play gesture rule block handled: click video manually to play", error);
+  playPromise.then(() => {
+    // Autoplay succeeded; handleVideoPlaying() (bound to onplay/onplaying)
+    // will also fire, but mark it here too in case those events lag.
+    videoHasStarted = true;
+    hideManualPlayOverlay();
+  }).catch(error => {
+    console.log("Autoplay was blocked by the browser, showing manual play button:", error);
+    showManualPlayOverlay();
+  });
+} else {
+  // Older browsers: play() may not return a promise at all.
+  // Use a short timeout to check whether playback actually began.
+  setTimeout(() => {
+    if (!videoHasStarted && ply.paused) {
+      showManualPlayOverlay();
+    }
+  }, 800);
+}
+}
+
+// Called whenever the <video> element fires 'play' or 'playing' —
+// confirms autoplay (or a manual tap) actually started playback.
+function handleVideoPlaying() {
+videoHasStarted = true;
+hideManualPlayOverlay();
+}
+
+function showManualPlayOverlay() {
+const overlay = document.getElementById('manual-play-overlay');
+if(overlay) overlay.classList.remove('hidden');
+if (window.lucide) lucide.createIcons();
+}
+
+function hideManualPlayOverlay() {
+const overlay = document.getElementById('manual-play-overlay');
+if(overlay) overlay.classList.add('hidden');
+}
+
+// Explicit user-gesture play, triggered by tapping the overlay button.
+// A direct click handler like this is exempt from autoplay restrictions
+// on every major mobile and desktop browser.
+function manualPlayVideo() {
+const ply = document.getElementById('f-player');
+const playPromise = ply.play();
+if (playPromise !== undefined) {
+  playPromise.then(() => {
+    videoHasStarted = true;
+    hideManualPlayOverlay();
+  }).catch(error => {
+    console.log("Manual play attempt failed:", error);
+    // Keep the overlay visible so the user can try again
+    showManualPlayOverlay();
   });
 }
 }
@@ -690,7 +766,7 @@ if (flowState === "video_questions") {
   if(!videoFeedbackAnswers[videoIndex][videoQuestIndex]) return alert(errorText);
   advanceFlow();
 } else if (flowState === "favorite_ad") {
-  if(!preferredAd) return alert(currentLang === 'en' ? "Please select your favorite advertisement to proceed." : "कृपया आगे बढ़ने के लिए अपने पसंदीदा विज्ञापन को चुनें।");
+  if(!preferredAd) return alert(currentLang === 'en' ? "Please select your favorite advertisement to proceed." : "कृपया आगे बढ़ने के लिए अपने पसंदीदा विज्ञापन को चुनें।");
   flowState = "general_questions";
   questionIndex = 0;
   loadQuestion();
