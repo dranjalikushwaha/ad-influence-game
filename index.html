@@ -131,7 +131,7 @@ body { font-family: 'Inter', sans-serif; }
 
     <div class="p-4 sm:p-6 md:p-8 space-y-4 flex flex-col items-center">
       <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
-        <video id="f-player" onended="videoPlayEnded()" onclick="this.play()" onplay="handleVideoPlaying()" onplaying="handleVideoPlaying()" class="w-full h-full object-contain cursor-pointer" playsinline></video>
+        <video id="f-player" onended="videoPlayEnded()" onplay="handleVideoPlaying()" onplaying="handleVideoPlaying()" class="w-full h-full object-contain" playsinline webkit-playsinline muted></video>
 
         <!-- Manual Play Overlay: shown whenever autoplay is blocked or playback hasn't started -->
         <button type="button" id="manual-play-overlay" onclick="manualPlayVideo()" class="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-3 bg-black/50 text-white transition-opacity hidden">
@@ -139,6 +139,12 @@ body { font-family: 'Inter', sans-serif; }
             <i data-lucide="play" class="w-8 h-8 md:w-10 md:h-10 fill-current"></i>
           </span>
           <span id="manual-play-text" class="text-xs md:text-sm font-bold uppercase tracking-wider">Tap to Play Video</span>
+        </button>
+
+        <!-- Unmute Control: video must start muted to satisfy iOS autoplay rules; this lets the user turn sound on with one tap -->
+        <button type="button" id="unmute-overlay" onclick="unmuteVideo()" class="absolute bottom-3 right-3 flex items-center gap-2 bg-black/70 text-white px-3 py-2 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-lg hidden">
+          <i data-lucide="volume-x" class="w-4 h-4"></i>
+          <span id="unmute-text">Tap for Sound</span>
         </button>
       </div>
       <p id="tap-message-text" class="text-[10px] md:text-xs text-slate-400 font-semibold italic text-center">Tap the player if the video does not start automatically</p>
@@ -229,6 +235,7 @@ const TRANSLATIONS = {
     btnProceed: "Proceed to Videos",
     tapMsg: "Tap the player if the video does not start automatically",
     tapToPlay: "Tap to Play Video",
+    tapForSound: "Tap for Sound",
     prevBtn: "Previous",
     nextBtn: "Next Question",
     nextBtnFinal: "Proceed to Final Section",
@@ -269,6 +276,7 @@ const TRANSLATIONS = {
     btnProceed: "चलो वीडियो देखते हैं! 🎥",
     tapMsg: "यदि वीडियो अपने आप शुरू न हो, तो स्क्रीन पर टैप करें",
     tapToPlay: "वीडियो चलाने के लिए टैप करें",
+    tapForSound: "आवाज़ के लिए टैप करें",
     prevBtn: "पीछे",
     nextBtn: "अगला प्रश्न",
     nextBtnFinal: "अंतिम भाग पर जाएँ",
@@ -523,6 +531,8 @@ screentimeSelect.value = savedSTValue;
 document.getElementById('tap-message-text').innerText = t.tapMsg;
 const manualPlayTextEl = document.getElementById('manual-play-text');
 if(manualPlayTextEl) manualPlayTextEl.innerText = t.tapToPlay;
+const unmuteTextEl = document.getElementById('unmute-text');
+if(unmuteTextEl) unmuteTextEl.innerText = t.tapForSound;
 document.getElementById('success-title-text').innerText = t.successTitle;
 document.getElementById('success-subtitle-text').innerText = t.successSub;
 document.getElementById('success-btn-text').innerText = t.newPart;
@@ -577,26 +587,32 @@ const t = TRANSLATIONS[currentLang];
 document.getElementById('video-title').innerText = v.title;
 document.getElementById('video-count-badge').innerText = `${t.adNumberLabel} ${videoIndex+1} ${t.adOfLabel} 4`;
 
-// Reset autoplay-tracking state for the new video and hide any leftover overlay
+// Reset autoplay-tracking state for the new video and hide any leftover overlays
 videoHasStarted = false;
 hideManualPlayOverlay();
+hideUnmuteOverlay();
 
+// iOS Safari can hold onto stale playback state on a reused <video>
+// element, so fully detach the old source before assigning the new one.
+ply.pause();
+ply.removeAttribute('src');
+ply.load();
+
+// iOS (and most mobile browsers) will only allow JS-triggered autoplay
+// if the video is muted at the moment play() is called. We start muted
+// here and offer a one-tap "unmute" control once playback is confirmed,
+// so the survey still autoplays reliably on iPhones instead of getting
+// stuck waiting for a gesture that may never come.
+ply.muted = true;
 ply.src = v.url;
 ply.load();
 
-// Trigger browser native media play. Many mobile browsers (and some
-// desktop browsers with strict autoplay policies) will silently block
-// this, especially when audio is enabled or after navigating between
-// stages. If the promise rejects, or playback simply never starts,
-// we fall back to a manual "Tap to Play" button so the user is never
-// stuck looking at a frozen/black video.
 const playPromise = ply.play();
 if (playPromise !== undefined) {
   playPromise.then(() => {
-    // Autoplay succeeded; handleVideoPlaying() (bound to onplay/onplaying)
-    // will also fire, but mark it here too in case those events lag.
     videoHasStarted = true;
     hideManualPlayOverlay();
+    showUnmuteOverlay();
   }).catch(error => {
     console.log("Autoplay was blocked by the browser, showing manual play button:", error);
     showManualPlayOverlay();
@@ -607,6 +623,8 @@ if (playPromise !== undefined) {
   setTimeout(() => {
     if (!videoHasStarted && ply.paused) {
       showManualPlayOverlay();
+    } else if (videoHasStarted) {
+      showUnmuteOverlay();
     }
   }, 800);
 }
@@ -617,6 +635,10 @@ if (playPromise !== undefined) {
 function handleVideoPlaying() {
 videoHasStarted = true;
 hideManualPlayOverlay();
+const ply = document.getElementById('f-player');
+if (ply.muted) {
+  showUnmuteOverlay();
+}
 }
 
 function showManualPlayOverlay() {
@@ -630,20 +652,58 @@ const overlay = document.getElementById('manual-play-overlay');
 if(overlay) overlay.classList.add('hidden');
 }
 
+function showUnmuteOverlay() {
+const overlay = document.getElementById('unmute-overlay');
+if(overlay) overlay.classList.remove('hidden');
+if (window.lucide) lucide.createIcons();
+}
+
+function hideUnmuteOverlay() {
+const overlay = document.getElementById('unmute-overlay');
+if(overlay) overlay.classList.add('hidden');
+}
+
+// One-tap unmute, triggered by a direct user gesture so it is never
+// blocked by browser autoplay-with-sound restrictions.
+function unmuteVideo() {
+const ply = document.getElementById('f-player');
+ply.muted = false;
+// Some iOS versions pause playback the instant volume/mute changes
+// without a fresh play() call tied to the same gesture, so re-trigger it.
+const playPromise = ply.play();
+if (playPromise !== undefined) {
+  playPromise.catch(() => { /* already playing in most cases; ignore */ });
+}
+hideUnmuteOverlay();
+}
+
 // Explicit user-gesture play, triggered by tapping the overlay button.
 // A direct click handler like this is exempt from autoplay restrictions
-// on every major mobile and desktop browser.
+// on every major mobile and desktop browser. We also unmute here since
+// the tap itself is the gesture iOS requires for audio playback.
 function manualPlayVideo() {
 const ply = document.getElementById('f-player');
+ply.muted = false;
 const playPromise = ply.play();
 if (playPromise !== undefined) {
   playPromise.then(() => {
     videoHasStarted = true;
     hideManualPlayOverlay();
+    hideUnmuteOverlay();
   }).catch(error => {
-    console.log("Manual play attempt failed:", error);
-    // Keep the overlay visible so the user can try again
-    showManualPlayOverlay();
+    console.log("Manual play with sound failed, retrying muted:", error);
+    // Fallback: some browsers still refuse unmuted playback even on a
+    // tap in rare cases. Retry muted so the survey never gets stuck,
+    // and let the user unmute via the unmute control instead.
+    ply.muted = true;
+    ply.play().then(() => {
+      videoHasStarted = true;
+      hideManualPlayOverlay();
+      showUnmuteOverlay();
+    }).catch(err => {
+      console.log("Manual play attempt failed entirely:", err);
+      showManualPlayOverlay();
+    });
   });
 }
 }
