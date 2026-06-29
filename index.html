@@ -124,19 +124,7 @@ body { font-family: 'Inter', sans-serif; }
 
     <div class="p-4 sm:p-6 md:p-8 space-y-4 flex flex-col items-center">
       <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
-        <video id="f-player" onended="videoPlayEnded()" onplay="handleVideoPlaying()" onplaying="handleVideoPlaying()" class="w-full h-full object-contain" playsinline webkit-playsinline muted></video>
-
-        <button type="button" id="manual-play-overlay" onclick="manualPlayVideo()" class="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-3 bg-black/50 text-white transition-opacity hidden">
-          <span class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/90 text-orange-600 flex items-center justify-center shadow-lg">
-            <i data-lucide="play" class="w-8 h-8 md:w-10 md:h-10 fill-current"></i>
-          </span>
-          <span id="manual-play-text" class="text-xs md:text-sm font-bold uppercase tracking-wider">Tap to Play Video</span>
-        </button>
-
-        <button type="button" id="unmute-overlay" onclick="unmuteVideo()" class="absolute bottom-3 right-3 flex items-center gap-2 bg-black/70 text-white px-3 py-2 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-lg hidden">
-          <i data-lucide="volume-x" class="w-4 h-4"></i>
-          <span id="unmute-text">Tap for Sound</span>
-        </button>
+        <video id="f-player" onended="videoPlayEnded()" onclick="this.play()" class="w-full h-full object-contain cursor-pointer" autoplay playsinline></video>
       </div>
       <p id="tap-message-text" class="text-[10px] md:text-xs text-slate-400 font-semibold italic text-center">Tap the player if the video does not start automatically</p>
     </div>
@@ -145,7 +133,7 @@ body { font-family: 'Inter', sans-serif; }
 
 <div id="stage-questionnaire" class="hidden w-full flex justify-center">
   <div class="w-full max-w-3xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-slate-200">
-    <div class="bg-slate-50 p-5 md:p-7 border-b border-slate-100">
+    <div class="bg-slate-55 p-5 md:p-7 border-b border-slate-100">
       <div class="flex justify-between items-center mb-2">
         <span id="question-category-code" class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-wider">Category</span>
         <span id="question-count-label" class="text-slate-400 text-xs md:text-sm font-semibold">Question 1 of 22</span>
@@ -219,8 +207,6 @@ const TRANSLATIONS = {
     consentText: "As a parent or legal guardian, I hereby provide consent for my child to participate in this survey and agree to the secure transmission of their responses for academic research purposes.",
     btnProceed: "Proceed to Videos",
     tapMsg: "Tap the player if the video does not start automatically",
-    tapToPlay: "Tap to Play Video",
-    tapForSound: "Tap for Sound",
     prevBtn: "Previous",
     nextBtn: "Next Question",
     nextBtnFinal: "Proceed to Final Section",
@@ -260,8 +246,6 @@ const TRANSLATIONS = {
     consentText: "एक अभिभावक (माता-पिता/गार्जियन) के रूप में, मैं अपने बच्चे को इस सर्वे में भाग लेने की अनुमति देता/देती हूँ।",
     btnProceed: "चलो वीडियो देखते हैं! 🎥",
     tapMsg: "यदि वीडियो अपने आप शुरू न हो, तो स्क्रीन पर टैप करें",
-    tapToPlay: "वीडियो चलाने के लिए टैप करें",
-    tapForSound: "आवाज़ के लिए टैप करें",
     prevBtn: "पीछे",
     nextBtn: "अगला प्रश्न",
     nextBtnFinal: "अंतिम भाग पर जाएँ",
@@ -420,7 +404,7 @@ const VIDEOS = [
 { title: "Doritos Sling Baby", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20SLING%20BABY%20_%20Doritos%20Commercial%20_%20%23superbowl%20%23commercials%20480P.mp4" },
 { title: "Frooti Mango", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Choos%20The%20Mango%2C%20Choose%20%23TheFrootiLife.%20720P.mp4" },
 { title: "New Maggi Oats Noodles", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20New%20MAGGI%20OATS%20Noodles%20AD%20%23HealthIsEnjoyable%20720P.mp4" },
-{ title: "Cadbury Dairy Milk Lickables", url: "https://raw.githubusercontent.com/dranjalikushwaha/ad-influence-game/main/vidssave.com%20Cadbury%20Dairy%20Milk%20Lickables%20720P.mp4" }
+{ title: "Cadbury Dairy Milk Lickables", url: "https://qurppobjmbxeafytfaya.supabase.co/storage/v1/object/public/k/vidssave.com%20Cadbury%20Dairy%20Milk%20Lickables%20720P.mp4" }
 ];
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyQUHc5ugq1jlCRVqEyU6YRXgSDwCXeCCaMBA7yXPznWbs1MBycA4RvzcEPP-Gx2ff1xw/exec';
@@ -441,10 +425,6 @@ let flowState = "demographics";
 let videoQuestIndex = 0;       
 let questionIndex = 0;          
 let preferredAd = "";          
-
-// Tracks whether the current video has actually started playing,
-// so we know whether to show the manual "Tap to Play" overlay.
-let videoHasStarted = false;
 
 window.onload = () => {
 lucide.createIcons();
@@ -514,10 +494,6 @@ screentimeSelect.value = savedSTValue;
 
 // Dynamic labels
 document.getElementById('tap-message-text').innerText = t.tapMsg;
-const manualPlayTextEl = document.getElementById('manual-play-text');
-if(manualPlayTextEl) manualPlayTextEl.innerText = t.tapToPlay;
-const unmuteTextEl = document.getElementById('unmute-text');
-if(unmuteTextEl) unmuteTextEl.innerText = t.tapForSound;
 document.getElementById('success-title-text').innerText = t.successTitle;
 document.getElementById('success-subtitle-text').innerText = t.successSub;
 document.getElementById('success-btn-text').innerText = t.newPart;
@@ -571,99 +547,19 @@ const ply = document.getElementById('f-player');
 const t = TRANSLATIONS[currentLang];
 document.getElementById('video-title').innerText = v.title;
 document.getElementById('video-count-badge').innerText = `${t.adNumberLabel} ${videoIndex+1} ${t.adOfLabel} 4`;
-
-// Reset autoplay-tracking state for the new video and hide any leftover overlays
-videoHasStarted = false;
-hideManualPlayOverlay();
-hideUnmuteOverlay();
-
-// Detach source completely for smart browser stream allocation shifts
-ply.pause();
-ply.removeAttribute('src');
-ply.load();
-
-ply.muted = true;
 ply.src = v.url;
 ply.load();
 
+// Trigger browser native media play (enabled via demographics submit interaction)
 const playPromise = ply.play();
 if (playPromise !== undefined) {
-  playPromise.then(() => {
-    videoHasStarted = true;
-    hideManualPlayOverlay();
-    showUnmuteOverlay();
-  }).catch(error => {
-    console.log("Autoplay blocked, offering user physical tap proxy context:", error);
-    showManualPlayOverlay();
-  });
-} else {
-  setTimeout(() => {
-    if (!videoHasStarted && ply.paused) {
-      showManualPlayOverlay();
-    } else if (videoHasStarted) {
-      showUnmuteOverlay();
-    }
-  }, 800);
-}
-}
-
-function handleVideoPlaying() {
-videoHasStarted = true;
-hideManualPlayOverlay();
-const ply = document.getElementById('f-player');
-if (ply.muted) {
-  showUnmuteOverlay();
-}
-}
-
-function showManualPlayOverlay() {
-const overlay = document.getElementById('manual-play-overlay');
-if(overlay) overlay.classList.remove('hidden');
-if (window.lucide) lucide.createIcons();
-}
-
-function hideManualPlayOverlay() {
-const overlay = document.getElementById('manual-play-overlay');
-if(overlay) overlay.classList.add('hidden');
-}
-
-function showUnmuteOverlay() {
-const overlay = document.getElementById('unmute-overlay');
-if(overlay) overlay.classList.remove('hidden');
-if (window.lucide) lucide.createIcons();
-}
-
-function hideUnmuteOverlay() {
-const overlay = document.getElementById('unmute-overlay');
-if(overlay) overlay.classList.add('hidden');
-}
-
-function unmuteVideo() {
-const ply = document.getElementById('f-player');
-ply.muted = false;
-const playPromise = ply.play();
-if (playPromise !== undefined) {
-  playPromise.catch(() => {});
-}
-hideUnmuteOverlay();
-}
-
-// FIXED: Handled explicit proxy playback invocation logic requested by the mobile browser overlay tap
-function manualPlayVideo() {
-const ply = document.getElementById('f-player');
-ply.muted = true; 
-const playPromise = ply.play();
-if (playPromise !== undefined) {
-  playPromise.then(() => {
-    videoHasStarted = true;
-    hideManualPlayOverlay();
-    showUnmuteOverlay();
-  }).catch(error => {
-    console.log("Playback invocation bypassed by explicit runtime limits:", error);
+  playPromise.catch(error => {
+    console.log("Auto-play gesture rule block handled: click video manually to play", error);
   });
 }
 }
 
+// Automatically transition to the feedback questionnaire the instant the video ends
 function videoPlayEnded() {
 flowState = "video_questions";
 videoQuestIndex = 0;
@@ -672,168 +568,156 @@ loadQuestion();
 }
 
 function loadQuestion() {
+const likertContainer = document.getElementById('likert-container');
+const favContainer = document.getElementById('favorite-ad-container');
+const prevBtn = document.getElementById('ques-prev-btn');
+const nextBtn = document.getElementById('ques-next-btn');
 const t = TRANSLATIONS[currentLang];
-resetLikertBoxes();
 
-if (flowState === "video_questions") {
-  // Post-video specific metrics evaluation stage
-  document.getElementById('likert-container').classList.remove('hidden');
-  document.getElementById('favorite-ad-container').classList.add('hidden');
-  
-  document.getElementById('question-category-code').innerText = `${t.adFeedback} - ${VIDEOS[videoIndex].title}`;
+// Always update Likert box label text languages
+for(let i=1; i<=5; i++) {
+  const lbl = document.getElementById(`likert-label-${i}`);
+  if(lbl) lbl.innerText = t.likertLabels[i-1];
+}
+
+if(flowState === "video_questions") {
+  likertContainer.classList.remove('hidden');
+  favContainer.classList.add('hidden');
+  prevBtn.classList.add('invisible'); 
+  nextBtn.innerText = t.nextBtn;
+
+  const adName = VIDEOS[videoIndex].title;
+  document.getElementById('question-category-code').innerText = `${t.adFeedback}: ${adName}`;
+  document.getElementById('question-text').innerText = `"${AD_SPEC_QUESTIONS[currentLang][videoQuestIndex]}"`;
   document.getElementById('question-count-label').innerText = `${t.questionNumLabel} ${videoQuestIndex + 1} ${t.questionOfLabel} 5`;
-  document.getElementById('question-text').innerText = AD_SPEC_QUESTIONS[currentLang][videoQuestIndex];
   
-  // Highlighting active answers on historical backtracking actions
-  const pastAns = videoFeedbackAnswers[videoIndex][videoQuestIndex];
-  if (pastAns) highlightLikertBox(pastAns);
+  updateLikertUI(videoFeedbackAnswers[videoIndex][videoQuestIndex]);
+
+} else if (flowState === "favorite_ad") {
+  likertContainer.classList.add('hidden');
+  favContainer.classList.remove('hidden');
+  prevBtn.classList.add('invisible');
+  nextBtn.innerText = t.nextBtnFinal;
+
+  document.getElementById('question-category-code').innerText = t.adPreference;
+  document.getElementById('question-text').innerText = t.favTitle;
+  document.getElementById('question-count-label').innerText = t.overallChoice;
   
+  renderFavoriteAdSelection();
+
 } else if (flowState === "general_questions") {
-  // Global aggregate criteria evaluation matrix deployment context
-  document.getElementById('likert-container').classList.remove('hidden');
-  document.getElementById('favorite-ad-container').classList.add('hidden');
+  likertContainer.classList.remove('hidden');
+  favContainer.classList.add('hidden');
   
+  if(questionIndex > 0) {
+    prevBtn.classList.remove('invisible');
+  } else {
+    prevBtn.classList.add('invisible');
+  }
+  prevBtn.innerText = t.prevBtn;
+  
+  nextBtn.innerText = (questionIndex === SURVEY_QUESTIONS.length - 1) ? t.nextBtnSubmit : t.nextBtn;
+
   const q = SURVEY_QUESTIONS[questionIndex];
   document.getElementById('question-category-code').innerText = currentLang === 'en' ? q.cat : q.cat_hi;
+  document.getElementById('question-text').innerText = `"${currentLang === 'en' ? q.text_en : q.text_hi}"`;
   document.getElementById('question-count-label').innerText = `${t.questionNumLabel} ${questionIndex + 1} ${t.questionOfLabel} ${SURVEY_QUESTIONS.length}`;
-  document.getElementById('question-text').innerText = currentLang === 'en' ? q.text_en : q.text_hi;
   
-  const pastAns = userAnswers[q.id];
-  if (pastAns) highlightLikertBox(pastAns);
-  
-} else if (flowState === "favorite_selection") {
-  // Final Choice Interface Execution Phase
-  document.getElementById('likert-container').classList.add('hidden');
-  document.getElementById('favorite-ad-container').classList.remove('hidden');
-  
-  document.getElementById('question-category-code').innerText = t.overallChoice;
-  document.getElementById('question-count-label').innerText = t.adPreference;
-  document.getElementById('question-text').innerText = t.favTitle;
-  
-  const container = document.getElementById('favorite-ad-container');
-  container.innerHTML = "";
-  VIDEOS.forEach((v, idx) => {
-    const isSel = preferredAd === v.title;
-    container.innerHTML += `
-      <button onclick="selectFavoriteAd('${v.title}')" class="p-4 border-2 rounded-2xl text-left font-bold transition-all ${isSel ? 'border-orange-500 bg-orange-50 text-orange-700' : 'border-slate-100 bg-slate-50 text-slate-700 hover:border-slate-200'}">
-        ${idx + 1}. ${v.title}
-      </button>
-    `;
-  });
+  updateLikertUI(userAnswers[q.id]);
+}
 }
 
-// Map Dynamic Likert Scale Option Text Blocks
-for (let i = 1; i <= 5; i++) {
-  const lbl = document.getElementById(`likert-label-${i}`);
-  if (lbl) lbl.innerText = t.likertLabels[i - 1];
-}
-
-// Adjust navigation layout configurations dynamically
-document.getElementById('ques-next-btn').innerText = 
-  (flowState === "favorite_selection") ? t.nextBtnSubmit : 
-  (flowState === "general_questions" && questionIndex === SURVEY_QUESTIONS.length - 1) ? t.nextBtnFinal : t.nextBtn;
-}
-
-function selectRating(val) {
-highlightLikertBox(val);
-if (flowState === "video_questions") {
-  videoFeedbackAnswers[videoIndex][videoQuestIndex] = val;
+function selectRating(v) {
+if(flowState === "video_questions") {
+  videoFeedbackAnswers[videoIndex][videoQuestIndex] = v;
+  updateLikertUI(v);
+  setTimeout(() => { advanceFlow(); }, 250);
 } else if (flowState === "general_questions") {
-  userAnswers[SURVEY_QUESTIONS[questionIndex].id] = val;
-}
-setTimeout(() => { nextQuestion(); }, 250);
-}
-
-function highlightLikertBox(val) {
-resetLikertBoxes();
-const activeBox = document.getElementById(`likert-box-${val}`);
-if (activeBox) {
-  activeBox.className = "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-2 border-orange-500 bg-orange-50 flex items-center justify-center text-base sm:text-xl font-black text-orange-600 transition-all scale-105 shadow-sm";
-}
-}
-
-function resetLikertBoxes() {
-for (let i = 1; i <= 5; i++) {
-  const box = document.getElementById(`likert-box-${i}`);
-  if (box) box.className = "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-2 border-slate-100 flex items-center justify-center text-base sm:text-xl font-bold text-slate-300 transition-all";
+  userAnswers[SURVEY_QUESTIONS[questionIndex].id] = v;
+  updateLikertUI(v);
+  setTimeout(() => { advanceFlow(); }, 250);
 }
 }
 
 function selectFavoriteAd(title) {
 preferredAd = title;
-loadQuestion();
+renderFavoriteAdSelection();
 }
 
-function nextQuestion() {
-if (flowState === "video_questions") {
-  if (!videoFeedbackAnswers[videoIndex][videoQuestIndex]) return alert(currentLang === 'en' ? "Please select a rating." : "कृपया रेटिंग चुनें।");
-  if (videoQuestIndex < 4) {
+function renderFavoriteAdSelection() {
+const container = document.getElementById('favorite-ad-container');
+container.innerHTML = '';
+VIDEOS.forEach((v, idx) => {
+  const isSelected = (preferredAd === v.title);
+  const activeClass = isSelected ? 'border-orange-500 bg-orange-50 text-orange-600 ring-2 ring-orange-400' : 'border-slate-200 text-slate-700 hover:border-orange-300';
+  container.innerHTML += `
+    <button type="button" onclick="selectFavoriteAd('${v.title}')" class="fav-ad-option p-4 md:p-6 rounded-2xl border-2 text-left font-bold transition-all flex items-center gap-4 ${activeClass}">
+      <span class="w-10 h-10 rounded-full flex items-center justify-center ${isSelected ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600'} text-base font-extrabold">${idx+1}</span>
+      <span class="text-sm md:text-base tracking-tight uppercase">${v.title}</span>
+    </button>
+  `;
+});
+}
+
+function updateLikertUI(v) {
+for(let i=1; i<=5; i++) {
+  const b = document.getElementById(`likert-box-${i}`);
+  if(b) {
+    b.className = (i === v) ?
+    "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-4 border-orange-500 bg-orange-50 flex items-center justify-center text-base sm:text-xl font-black text-orange-600 scale-105 shadow-sm transition-all" :
+    "w-11 h-11 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl border-2 border-slate-100 flex items-center justify-center text-base sm:text-xl font-bold text-slate-300 transition-all";
+  }
+}
+}
+
+function advanceFlow() {
+if(flowState === "video_questions") {
+  if(videoQuestIndex < 4) {
     videoQuestIndex++;
     loadQuestion();
   } else {
-    if (videoIndex < 3) {
+    if(videoIndex < 3) {
       videoIndex++;
       flowState = "video_play";
       showStage('videos');
       loadActiveVideo();
     } else {
-      flowState = "general_questions";
-      questionIndex = 0;
+      flowState = "favorite_ad";
       loadQuestion();
     }
   }
 } else if (flowState === "general_questions") {
-  if (!userAnswers[SURVEY_QUESTIONS[questionIndex].id]) return alert(currentLang === 'en' ? "Please select a rating." : "कृपया रेटिंग चुनें।");
-  if (questionIndex < SURVEY_QUESTIONS.length - 1) {
+  if(questionIndex < SURVEY_QUESTIONS.length - 1) {
     questionIndex++;
     loadQuestion();
   } else {
-    flowState = "favorite_selection";
-    loadQuestion();
+    transmitPayloadData();
   }
-} else if (flowState === "favorite_selection") {
-  if (!preferredAd) return alert(currentLang === 'en' ? "Please select your favorite advertisement." : "कृपया अपना पसंदीदा विज्ञापन चुनें।");
-  transmitPayloadData();
+}
+}
+
+function nextQuestion() {
+if(flowState === "favorite_ad") {
+  if(!preferredAd) return alert(currentLang === 'en' ? "Please select your favorite advertisement." : "कृपया अपना पसंदीदा विज्ञापन चुनें।");
+  flowState = "general_questions";
+  questionIndex = 0;
+  loadQuestion();
+} else {
+  advanceFlow();
 }
 }
 
 function prevQuestion() {
-if (flowState === "video_questions") {
-  if (videoQuestIndex > 0) {
-    videoQuestIndex--;
-    loadQuestion();
-  } else {
-    if (videoIndex > 0) {
-      videoIndex--;
-      flowState = "video_questions";
-      videoQuestIndex = 4;
-      showStage('questionnaire');
-      loadQuestion();
-    } else {
-      flowState = "demographics";
-      showStage('demographics');
-    }
-  }
-} else if (flowState === "general_questions") {
-  if (questionIndex > 0) {
+if(flowState === "general_questions") {
+  if(questionIndex > 0) {
     questionIndex--;
     loadQuestion();
-  } else {
-    flowState = "video_questions";
-    videoIndex = 3;
-    videoQuestIndex = 4;
-    showStage('questionnaire');
-    loadQuestion();
   }
-} else if (flowState === "favorite_selection") {
-  flowState = "general_questions";
-  questionIndex = SURVEY_QUESTIONS.length - 1;
-  loadQuestion();
 }
 }
 
 function transmitPayloadData() {
-if (isSubmitting) return;
+if(isSubmitting) return;
 isSubmitting = true;
 
 const finalPayload = {
@@ -845,7 +729,6 @@ const finalPayload = {
   videoFeedbackAnswers: JSON.stringify(videoFeedbackAnswers)
 };
 
-// Instantly save transaction to client-side local registry to safeguard collection integrity
 const logs = JSON.parse(localStorage.getItem('survey_logs') || "[]");
 logs.push(finalPayload);
 localStorage.setItem('survey_logs', JSON.stringify(logs));
@@ -858,13 +741,10 @@ fetch(SCRIPT_URL, {
   mode: 'no-cors',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(finalPayload)
-}).then(() => {
-  console.log("Payload transmitted to centralized sheets matrix cleanly.");
-}).catch(err => {
-  console.error("Endpoint push anomaly encountered:", err);
-}).finally(() => {
-  isSubmitting = false;
-});
+})
+.then(() => { console.log("Payload sent safely."); })
+.catch(err => { console.error("Endpoint push anomaly encountered:", err); })
+.finally(() => { isSubmitting = false; });
 }
 
 function showStage(stageId) {
